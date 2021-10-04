@@ -7,15 +7,15 @@ import { TestingBus } from '../../src/lib/testing/testing-bus';
 import { BalanceTopUpCommand } from '../app/balance/command/balance-top-up.command';
 import { InsufficientFundsEvent } from '../app/balance/event/insufficient-funds.event';
 import { BalanceTopUpDoneEvent } from '../app/balance/event/balance-top-up-done.event';
+import { BalanceTopUpContext } from '../app/balance/context/balance-top-up.context';
 
-import { PaymentFlow } from '../app/payment/flow/payment.flow';
+import { PaymentContext } from '../app/payment/context/payment.context';
 import { PaymentCommand } from '../app/payment/command/payment.command';
 import { PaymentDoneEvent } from '../app/payment/event/payment-done.event';
 import { PaymentFailEvent } from '../app/payment/event/payment-fail.event';
 import { PaymentDto } from '../app/payment/dto/payment.dto';
 
 import { AppModule } from '../app/app.module';
-import { BalanceTopUpFlow } from '../app/balance/flow/balance-top-up.flow';
 
 describe('Payment flow', () => {
   let testingBus: TestingBus;
@@ -37,65 +37,65 @@ describe('Payment flow', () => {
 
   describe('when insufficient funds', () => {
     let payment: PaymentDto;
-    let flow: PaymentFlow;
+    let paymentContext: PaymentContext;
 
     beforeEach(() => {
       payment = {
         amount: 100,
       };
-      flow = new PaymentFlow(payment);
+      paymentContext = new PaymentContext(payment);
     });
 
     beforeEach(() => {
-      testingBus.execute(new PaymentCommand(payment, flow));
+      testingBus.execute(new PaymentCommand(payment, paymentContext));
     });
 
     it('should request balance top-up', () => {
       expect(sequenceSpy.values).toEqual([
-        new PaymentCommand(payment, flow),
-        new PaymentFailEvent(payment, flow),
-        new InsufficientFundsEvent(payment.amount, flow),
+        new PaymentCommand(payment, paymentContext),
+        new PaymentFailEvent(payment, paymentContext),
+        new InsufficientFundsEvent(payment.amount, paymentContext),
 
-        new BalanceTopUpCommand(payment.amount, flow),
-        new BalanceTopUpDoneEvent(payment.amount, flow),
+        new BalanceTopUpCommand(payment.amount, paymentContext),
+        new BalanceTopUpDoneEvent(payment.amount, paymentContext),
 
-        new PaymentCommand(payment, flow),
-        new PaymentDoneEvent(payment, flow),
+        new PaymentCommand(payment, paymentContext),
+        new PaymentDoneEvent(payment, paymentContext),
       ]);
     });
   });
 
   describe('when sufficient funds', () => {
     let payment: PaymentDto;
-    let paymentFlow: PaymentFlow;
+    let paymentContext: PaymentContext;
     let balanceTopUpAmount: number;
-    let balanceTopUpFlow: BalanceTopUpFlow;
+    let balanceTopUpContext: BalanceTopUpContext;
 
     beforeEach(() => {
       payment = {
         amount: 100,
       };
-      paymentFlow = new PaymentFlow(payment);
+      paymentContext = new PaymentContext(payment);
 
       balanceTopUpAmount = 100;
-      balanceTopUpFlow = new BalanceTopUpFlow();
+      balanceTopUpContext = new BalanceTopUpContext();
     });
 
     beforeEach(async () => {
-      await testingBus.execute(new BalanceTopUpCommand(balanceTopUpAmount, balanceTopUpFlow));
+      await testingBus.execute(new BalanceTopUpCommand(balanceTopUpAmount, balanceTopUpContext));
     });
 
     beforeEach(async () => {
-      await testingBus.execute(new PaymentCommand(payment, paymentFlow));
+      await testingBus.execute(new PaymentCommand(payment, paymentContext));
     });
 
     it('should not request balance top-up', () => {
       expect(sequenceSpy.values).toStrictEqual([
-        new BalanceTopUpCommand(balanceTopUpAmount, balanceTopUpFlow),
-        new BalanceTopUpDoneEvent(balanceTopUpAmount, balanceTopUpFlow),
+        new BalanceTopUpCommand(balanceTopUpAmount, balanceTopUpContext),
+        new BalanceTopUpDoneEvent(balanceTopUpAmount, balanceTopUpContext),
 
-        new PaymentCommand(payment, paymentFlow),
-        new PaymentDoneEvent(payment, paymentFlow),
+        new PaymentCommand(payment, paymentContext),
+        new PaymentDoneEvent(payment, paymentContext),
       ]);
     });
   });

@@ -1,10 +1,9 @@
-import { IFlowCommand } from '../../../../src/lib/flow/flow-command';
-import { IFlow } from '../../../../src/lib/flow/flow';
+import { ICommand } from '../../../../src/lib/command/command';
 
-export class BalanceTopUpCommand<TFlow extends IFlow = IFlow> implements IFlowCommand<TFlow> {
+export class BalanceTopUpCommand<TContext extends object = object> implements ICommand<TContext> {
   constructor(
     readonly initialAmount: number,
-    readonly flow: TFlow,
+    readonly context: TContext,
   ) {
   }
 }

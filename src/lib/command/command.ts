@@ -1,8 +1,11 @@
 
 /**
  * Represents a command.
- * Commands carry all the data needed to execute the command in form of a plain data object.
+ * Commands carry all the data needed to execute the command in a form of a plain data object.
  */
-// tslint:disable-next-line:no-empty-interface
-export interface ICommand {
+export interface ICommand<TContext extends object = object> {
+  /**
+   * Gets a context this command is a part of.
+   */
+  readonly context: TContext;
 }

@@ -14,7 +14,7 @@ export class InsufficientFundsSaga implements ISaga<InsufficientFundsEvent> {
 
   handle(event$: Observable<InsufficientFundsEvent>): Observable<ICommand> {
     return event$.pipe(
-      map(event => new BalanceTopUpCommand(event.insufficientAmount, event.flow)),
+      map(event => new BalanceTopUpCommand(event.insufficientAmount, event.context)),
     );
   }
 }

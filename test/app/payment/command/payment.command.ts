@@ -1,11 +1,10 @@
-import { IFlow } from '../../../../src/lib/flow/flow';
-import { IFlowCommand } from '../../../../src/lib/flow/flow-command';
 import { PaymentDto } from '../dto/payment.dto';
+import { ICommand } from '../../../../src/lib/command/command';
 
-export class PaymentCommand<TFlow extends IFlow = IFlow> implements IFlowCommand<TFlow> {
+export class PaymentCommand<TContext extends object = object> implements ICommand<TContext> {
   constructor(
     readonly initial: PaymentDto,
-    readonly flow: TFlow,
+    readonly context: TContext,
   ) {
   }
 }

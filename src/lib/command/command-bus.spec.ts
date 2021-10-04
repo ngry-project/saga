@@ -8,9 +8,13 @@ import { ICommandHandler } from './command-handler';
 import { CommandBus } from './command-bus';
 import { CommandHandlerRegistrar } from './command-handler-registrar';
 
+class TestContext {
+}
+
 class TestCommand implements ICommand {
   constructor(
     readonly payload: string,
+    readonly context = new TestContext(),
   ) {
   }
 }

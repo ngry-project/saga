@@ -27,9 +27,9 @@ export class BalanceTopUpHandler implements ICommandHandler<BalanceTopUpCommand>
         switchMap(form => this.balanceService.topUp(form.amount).pipe(
           tap(result => {
             if (result) {
-              this.eventBus.publish(new BalanceTopUpDoneEvent(form.amount, command.flow));
+              this.eventBus.publish(new BalanceTopUpDoneEvent(form.amount, command.context));
             } else {
-              this.eventBus.publish(new BalanceTopUpFailEvent(form.amount, command.flow));
+              this.eventBus.publish(new BalanceTopUpFailEvent(form.amount, command.context));
             }
           }),
         )),

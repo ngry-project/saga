@@ -1,11 +1,10 @@
-import { IFlow } from '../../../../src/lib/flow/flow';
-import { IFlowEvent } from '../../../../src/lib/flow/flow-event';
+import { IEvent } from '../../../../src/lib/event/event';
 import { PaymentDto } from '../dto/payment.dto';
 
-export class PaymentDoneEvent<TFlow extends IFlow = IFlow> implements IFlowEvent<TFlow> {
+export class PaymentDoneEvent<TContext extends object = object> implements IEvent<TContext> {
   constructor(
     readonly payment: PaymentDto,
-    readonly flow: TFlow,
+    readonly context: TContext,
   ) {
   }
 }

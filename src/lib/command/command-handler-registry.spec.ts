@@ -6,9 +6,13 @@ import { ICommand } from './command';
 import { ICommandHandler } from './command-handler';
 import { CommandHandlerRegistry } from './command-handler-registry';
 
+class TestContext {
+}
+
 class TestCommand implements ICommand {
   constructor(
     readonly payload: string,
+    readonly context = new TestContext(),
   ) {
   }
 }
