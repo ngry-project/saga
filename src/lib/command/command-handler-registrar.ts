@@ -1,7 +1,8 @@
 import { EMPTY, of } from 'rxjs';
 import { catchError, mergeMap } from 'rxjs/operators';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { ofType } from '@ngry/rx';
+import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 import { ICommandHandler } from './command-handler';
 import { CommandBus } from './command-bus';
 import { CommandHandlerRegistry } from './command-handler-registry';
@@ -19,6 +20,8 @@ export class CommandHandlerRegistrar {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly registry: CommandHandlerRegistry,
+    @Inject(SAGA_ROOT_OPTIONS) @Optional()
+    private readonly options?: SagaRootOptions,
   ) {
   }
 
@@ -27,6 +30,10 @@ export class CommandHandlerRegistrar {
    * Subscribes given command handler to {@link CommandBus} to execute published commands of specific type.
    */
   register(handler: ICommandHandler): void {
+    if (this.options?.debug) {
+      console.log(new Date().toISOString(), handler);
+    }
+
     this.registry.register(handler);
 
     this.commandBus.commands$.pipe(

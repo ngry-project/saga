@@ -1,11 +1,12 @@
 import { EMPTY, of } from 'rxjs';
 import { catchError, mergeMap, tap } from 'rxjs/operators';
-import { Injectable } from '@angular/core';
+import {Inject, Injectable, Optional} from '@angular/core';
 import { ofType } from '@ngry/rx';
 import { CommandBus } from '../command/command-bus';
 import { EventBus } from '../event/event-bus';
 import { ISaga } from './saga';
 import { SagaRegistry } from './saga-registry';
+import {SAGA_ROOT_OPTIONS, SagaRootOptions} from '../configuration/saga-root-options';
 
 /**
  * Represents saga registrar.
@@ -21,6 +22,8 @@ export class SagaRegistrar {
     private readonly commandBus: CommandBus,
     private readonly eventBus: EventBus,
     private readonly registry: SagaRegistry,
+    @Inject(SAGA_ROOT_OPTIONS) @Optional()
+    private readonly options?: SagaRootOptions,
   ) {
   }
 
@@ -29,6 +32,10 @@ export class SagaRegistrar {
    * Subscribes given saga to {@link EventBus} to respond to corresponding events and publishes resolved commands to {@link CommandBus}.
    */
   register(saga: ISaga): void {
+    if (this.options?.debug) {
+      console.log(new Date().toISOString(), saga);
+    }
+
     this.registry.register(saga);
 
     this.eventBus.events$.pipe(

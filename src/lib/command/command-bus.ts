@@ -1,8 +1,8 @@
 import { Observable, Subject } from 'rxjs';
 import { Inject, Injectable, Optional } from '@angular/core';
+import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 import { ICommand } from './command';
 import { CommandHandlerRegistry } from './command-handler-registry';
-import { SAGA_ROOT_MODULE_OPTIONS, SagaRootModuleOptions } from '../configuration/saga-root-module-options';
 
 /**
  * Represents a command bus.
@@ -21,8 +21,8 @@ export class CommandBus {
 
   constructor(
     private readonly registry: CommandHandlerRegistry,
-    @Inject(SAGA_ROOT_MODULE_OPTIONS) @Optional()
-    private readonly configuration?: SagaRootModuleOptions,
+    @Inject(SAGA_ROOT_OPTIONS) @Optional()
+    private readonly options?: SagaRootOptions,
   ) {
   }
 
@@ -32,7 +32,7 @@ export class CommandBus {
    */
   execute(command: ICommand): Promise<void | never> {
     return Promise.resolve().then(() => {
-      if (this.configuration?.debug) {
+      if (this.options?.debug) {
         console.log(new Date().toISOString(), command);
       }
 

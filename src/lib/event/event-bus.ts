@@ -1,7 +1,7 @@
 import { Observable, Subject } from 'rxjs';
 import { Inject, Injectable, Optional } from '@angular/core';
+import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 import { IEvent } from './event';
-import { SAGA_ROOT_MODULE_OPTIONS, SagaRootModuleOptions } from '../configuration/saga-root-module-options';
 
 /**
  * Represents an event bus.
@@ -19,8 +19,8 @@ export class EventBus {
   readonly events$: Observable<IEvent> = this._events$.asObservable();
 
   constructor(
-    @Inject(SAGA_ROOT_MODULE_OPTIONS) @Optional()
-    private readonly configuration?: SagaRootModuleOptions,
+    @Inject(SAGA_ROOT_OPTIONS) @Optional()
+    private readonly options?: SagaRootOptions,
   ) {
   }
 
@@ -30,7 +30,7 @@ export class EventBus {
    */
   publish(event: IEvent): Promise<void> {
     return Promise.resolve().then(() => {
-      if (this.configuration?.debug) {
+      if (this.options?.debug) {
         console.log(new Date().toISOString(), event);
       }
 

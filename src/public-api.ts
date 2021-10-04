@@ -16,9 +16,9 @@ export * from './lib/flow/of-flow';
 
 export * from './lib/saga/saga';
 
-export * from './lib/configuration/saga-feature-module-options';
+export * from './lib/configuration/saga-feature-options';
 export * from './lib/configuration/saga-feature.module';
-export * from './lib/configuration/saga-root-module-options';
+export * from './lib/configuration/saga-root-options';
 export * from './lib/configuration/saga-root.module';
 
 export * from './lib/saga.module';
