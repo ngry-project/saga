@@ -1,6 +1,6 @@
-import {Inject, Injectable, Optional} from '@angular/core';
-import {ISaga} from './saga';
-import {SAGA_ROOT_OPTIONS, SagaRootOptions} from '../configuration/saga-root-options';
+import { Inject, Injectable, Optional } from '@angular/core';
+import { ISaga } from './saga';
+import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 
 /**
  * Represents a saga registry.
@@ -26,7 +26,7 @@ export class SagaRegistry {
    */
   register(saga: ISaga): void | never {
     if (this.options?.debug) {
-      console.log(new Date().toISOString(), saga)
+      console.log(new Date().toISOString(), saga);
     }
 
     if (this.sagas.has(saga)) {
