@@ -27,27 +27,51 @@ class TestHandler implements ICommandHandler<TestCommand> {
 }
 
 describe('CommandHandlerRegistry', () => {
+  let registry: CommandHandlerRegistry;
+  let handler: TestHandler;
+
+  beforeEach(() => {
+    registry = TestBed.inject(CommandHandlerRegistry);
+    handler = TestBed.inject(TestHandler);
+  });
+
   describe('#register', () => {
-    let registry: CommandHandlerRegistry;
-    let handler: TestHandler;
-
-    beforeEach(() => {
-      registry = TestBed.inject(CommandHandlerRegistry);
-      handler = TestBed.inject(TestHandler);
-    });
-
     beforeEach(() => {
       registry.register(handler);
     });
 
-    it('should register command handler', () => {
-      expect(registry.resolve(new TestCommand('hello'))).toBeInstanceOf(TestHandler);
+    describe('when command type does not have an corresponding handler yet', () => {
+      it('should register the command handler', () => {
+        expect(registry.resolve(new TestCommand('hello'))).toBeInstanceOf(TestHandler);
+      });
     });
 
-    it('should allow only one handler per command type', () => {
-      expect(() => {
+    describe('when command type already has an corresponding handler', () => {
+      it('should throw an error', () => {
+        expect(() => {
+          registry.register(handler);
+        }).toThrow('Command TestCommand already has a corresponding handler');
+      });
+    });
+  });
+
+  describe('#resolve', () => {
+    describe('when command type does not have an corresponding handler', () => {
+      it('should throw an error', () => {
+        expect(() => {
+          registry.resolve(new TestCommand('hello'));
+        }).toThrow(`No corresponding handler found for command ${TestCommand.name}`);
+      });
+    });
+
+    describe('when command type has an corresponding handler', () => {
+      beforeEach(() => {
         registry.register(handler);
-      }).toThrow('Command TestCommand already has a corresponding handler');
+      });
+
+      it('should return an instance of an corresponding command handler', () => {
+        expect(registry.resolve(new TestCommand('hello'))).toBe(handler);
+      });
     });
   });
 });
