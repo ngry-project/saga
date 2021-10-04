@@ -9,6 +9,7 @@ export * from './lib/command/command-handler';
 export * from './lib/event/event';
 export * from './lib/event/event-bus';
 
+export * from './lib/flow/flow';
 export * from './lib/flow/flow-command';
 export * from './lib/flow/flow-event';
 export * from './lib/flow/of-flow';
