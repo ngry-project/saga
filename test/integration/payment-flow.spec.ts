@@ -17,7 +17,7 @@ import { PaymentDto } from '../app/payment/dto/payment.dto';
 
 import { AppModule } from '../app/app.module';
 
-describe('Payment flow', () => {
+describe('PaymentFlow', () => {
   let testingBus: TestingBus;
   let sequenceSpy: ObservableSpy<ICommand | IEvent>;
 

@@ -9,10 +9,10 @@ export class SagaFeatureModule {
     @Inject(SAGA_FEATURE_OPTIONS) features: Array<SagaFeatureOptions>,
     injector: Injector,
     commandHandlerRegistrar: CommandHandlerRegistrar,
-    sagaRegistrar: SagaRegistrar
+    sagaRegistrar: SagaRegistrar,
   ) {
     for (const feature of features) {
-      const {commands = [], sagas = []} = feature;
+      const {commands = [], sagas = [], flows = []} = feature;
 
       for (const type of commands) {
         commandHandlerRegistrar.register(injector.get(type));
@@ -20,6 +20,11 @@ export class SagaFeatureModule {
 
       for (const type of sagas) {
         sagaRegistrar.register(injector.get(type));
+      }
+
+      for (const type of flows) {
+        commandHandlerRegistrar.scan(injector.get(type));
+        sagaRegistrar.scan(injector.get(type));
       }
     }
   }

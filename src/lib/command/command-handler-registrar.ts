@@ -1,11 +1,13 @@
-import { EMPTY, of } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, mergeMap } from 'rxjs/operators';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { ofType } from '@ngry/rx';
 import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
+import { ICommand } from './command';
 import { ICommandHandler } from './command-handler';
 import { CommandBus } from './command-bus';
 import { CommandHandlerRegistry } from './command-handler-registry';
+import { COMMAND_HANDLER_METADATA, CommandHandlerMetadata } from './command-handler.decorator';
 
 /**
  * Represents a command handler registrar.
@@ -48,5 +50,20 @@ export class CommandHandlerRegistrar {
         }),
       )),
     ).subscribe();
+  }
+
+  scan(flow: object): void {
+    const metadata: CommandHandlerMetadata | undefined = Reflect.getMetadata(COMMAND_HANDLER_METADATA, flow.constructor.prototype);
+
+    if (metadata) {
+      for (const [methodKey, executes] of metadata.handlers) {
+        this.register({
+          executes,
+          execute(command$: Observable<ICommand>): Observable<unknown> {
+            return (flow as any)[methodKey](command$);
+          },
+        });
+      }
+    }
   }
 }

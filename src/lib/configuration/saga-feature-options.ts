@@ -5,6 +5,7 @@ import { ISaga } from '../saga/saga';
 export interface SagaFeatureOptions {
   commands?: Array<Type<ICommandHandler>>;
   sagas?: Array<Type<ISaga>>;
+  flows?: Array<Type<object>>;
 }
 
 export const SAGA_FEATURE_OPTIONS = new InjectionToken<SagaFeatureOptions>('SagaFeatureOptions');

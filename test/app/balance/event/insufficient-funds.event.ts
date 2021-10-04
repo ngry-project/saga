@@ -1,10 +1,9 @@
-import { IFlow } from '../../../../src/lib/flow/flow';
-import { IFlowEvent } from '../../../../src/lib/flow/flow-event';
+import { IEvent } from '../../../../src/lib/event/event';
 
-export class InsufficientFundsEvent<TFlow extends IFlow = IFlow> implements IFlowEvent<TFlow> {
+export class InsufficientFundsEvent<TContext extends object = object> implements IEvent<TContext> {
   constructor(
     readonly insufficientAmount: number,
-    readonly flow: TFlow,
+    readonly context: TContext,
   ) {
   }
 }

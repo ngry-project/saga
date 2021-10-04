@@ -1,16 +1,12 @@
 import { NgModule } from '@angular/core';
 import { SagaModule } from '../../../src/lib/saga.module';
-import { PaymentHandler } from './command/payment.handler';
-import { ContinuePaymentSaga } from './saga/continue-payment.saga';
+import { PaymentFlow } from './flow/payment.flow';
 
 @NgModule({
   imports: [
     SagaModule.forFeature({
-      commands: [
-        PaymentHandler,
-      ],
-      sagas: [
-        ContinuePaymentSaga,
+      flows: [
+        PaymentFlow,
       ],
     }),
   ],

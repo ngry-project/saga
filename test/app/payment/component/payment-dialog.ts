@@ -5,7 +5,7 @@ export class PaymentDialog {
   constructor() {
   }
 
-  afterClosed(): Observable<PaymentDto> {
+  afterClosed(): Observable<PaymentDto | null> {
     return of({
       amount: 100,
     });

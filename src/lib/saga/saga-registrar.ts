@@ -2,11 +2,14 @@ import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, filter, mergeMap, tap } from 'rxjs/operators';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { ofType } from '@ngry/rx';
+import { ICommand } from '../command/command';
 import { CommandBus } from '../command/command-bus';
+import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
+import { IEvent } from '../event/event';
 import { EventBus } from '../event/event-bus';
 import { ISaga } from './saga';
+import { SAGA_METADATA, SagaMetadata } from './saga.decorator';
 import { SagaRegistry } from './saga-registry';
-import {SAGA_ROOT_OPTIONS, SagaRootOptions} from '../configuration/saga-root-options';
 
 /**
  * Represents saga registrar.
@@ -51,5 +54,21 @@ export class SagaRegistrar {
         );
       }),
     ).subscribe();
+  }
+
+  scan(flow: object): void {
+    const metadata: SagaMetadata | undefined = Reflect.getMetadata(SAGA_METADATA, flow.constructor.prototype);
+
+    if (metadata) {
+      for (const [methodKey, definition] of metadata.definitions) {
+        this.register({
+          handles: definition.handles,
+          within: definition.within,
+          handle(event$: Observable<IEvent>): Observable<ICommand> {
+            return (flow as any)[methodKey](event$);
+          },
+        });
+      }
+    }
   }
 }
