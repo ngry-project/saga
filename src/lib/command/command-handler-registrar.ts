@@ -1,7 +1,6 @@
 import { EMPTY, Observable, of } from 'rxjs';
-import { catchError, mergeMap } from 'rxjs/operators';
+import { catchError, filter, mergeMap } from 'rxjs/operators';
 import { Inject, Injectable, Optional } from '@angular/core';
-import { ofType } from '@ngry/rx';
 import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 import { ICommand } from './command';
 import { ICommandHandler } from './command-handler';
@@ -39,7 +38,7 @@ export class CommandHandlerRegistrar {
     this.registry.register(handler);
 
     this.commandBus.commands$.pipe(
-      ofType(handler.executes),
+      filter(command => command instanceof handler.executes),
       mergeMap(command => handler.execute(of(command)).pipe(
         catchError(error => {
           if (handler.rollback) {

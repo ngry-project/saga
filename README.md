@@ -14,13 +14,13 @@ Lightweight Saga module for Angular.
 Using NPM:
 
 ```bash
-npm i @ngry/saga @ngry/rx
+npm i @ngry/saga
 ```
 
 Using Yarn:
 
 ```bash
-yarn add @ngry/saga @ngry/rx
+yarn add @ngry/saga
 ```
 
 ## Documentation

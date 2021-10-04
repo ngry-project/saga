@@ -1,7 +1,6 @@
 import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, filter, mergeMap, tap } from 'rxjs/operators';
 import { Inject, Injectable, Optional } from '@angular/core';
-import { ofType } from '@ngry/rx';
 import { ICommand } from '../command/command';
 import { CommandBus } from '../command/command-bus';
 import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
@@ -42,7 +41,7 @@ export class SagaRegistrar {
     this.registry.register(saga);
 
     this.eventBus.events$.pipe(
-      ofType(saga.handles),
+      filter(event => event instanceof saga.handles),
       filter(event => saga.within == null || event.context instanceof saga.within),
       mergeMap(event => {
         return saga.handle(of(event)).pipe(
