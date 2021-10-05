@@ -1,0 +1,158 @@
+{
+  "version": 2,
+  "projects": {
+    "example": {
+      "projectType": "application",
+      "root": "packages/example",
+      "sourceRoot": "packages/example/src",
+      "prefix": "ny",
+      "targets": {
+        "build": {
+          "executor": "@angular-devkit/build-angular:browser",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/packages/example",
+            "index": "packages/example/src/index.html",
+            "main": "packages/example/src/main.ts",
+            "polyfills": "packages/example/src/polyfills.ts",
+            "tsConfig": "packages/example/tsconfig.app.json",
+            "assets": [
+              "packages/example/src/favicon.ico",
+              "packages/example/src/assets"
+            ],
+            "styles": ["packages/example/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "packages/example/src/environments/environment.ts",
+                  "with": "packages/example/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "executor": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "example:build:production"
+            },
+            "development": {
+              "browserTarget": "example:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "executor": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "example:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "packages/example/src/**/*.ts",
+              "packages/example/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/packages/example"],
+          "options": {
+            "jestConfig": "packages/example/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "saga": {
+      "projectType": "library",
+      "root": "packages/saga",
+      "sourceRoot": "packages/saga/src",
+      "prefix": "ngry",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/angular:package",
+          "outputs": ["dist/packages/saga"],
+          "options": {
+            "project": "packages/saga/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "packages/saga/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "packages/saga/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/packages/saga"],
+          "options": {
+            "jestConfig": "packages/saga/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "packages/saga/src/**/*.ts",
+              "packages/saga/src/**/*.html"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/angular"
+  },
+  "generators": {
+    "@nrwl/angular:application": {
+      "style": "css",
+      "linter": "eslint",
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "none"
+    },
+    "@nrwl/angular:library": {
+      "style": "css",
+      "linter": "eslint",
+      "unitTestRunner": "jest"
+    },
+    "@nrwl/angular:component": {
+      "style": "css"
+    }
+  },
+  "defaultProject": "saga"
+}
