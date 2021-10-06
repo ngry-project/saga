@@ -120,7 +120,8 @@
           "outputs": ["coverage/packages/saga"],
           "options": {
             "jestConfig": "packages/saga/jest.config.js",
-            "passWithNoTests": true
+            "passWithNoTests": true,
+            "coverageReporters": ["lcov-info"]
           }
         },
         "lint": {
