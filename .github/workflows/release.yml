@@ -19,7 +19,7 @@ jobs:
       - run: nx run saga:test --verbose --code-coverage
       - uses: coverallsapp/github-action@master
         with:
-          path-to-lcov: ./coverage/packages/saga
+          path-to-lcov: ./coverage/packages/saga/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - run: nx run saga:build --verbose
       - run: npx semantic-release
