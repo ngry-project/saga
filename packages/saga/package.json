@@ -1,6 +1,26 @@
 {
   "name": "@ngry/saga",
+  "description": "Lightweight Saga module for Angular",
   "version": "0.0.1",
+  "keywords": [
+    "angular",
+    "saga",
+    "event",
+    "command"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ngry-project/saga"
+  },
+  "maintainers": [
+    {
+      "name": "Alex Chugaev",
+      "url": "https://github.com/avchugaev"
+    }
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@angular/common": "^12.2.0",
     "@angular/core": "^12.2.0"
