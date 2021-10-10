@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { CommandBus } from '../command/command-bus';
 import { EventBus } from '../event/event-bus';
 import { DevtoolsRemote } from '../devtools/devtools-remote';
+import { CommandPublishedMessage } from '../devtools/message/command-published-message';
+import { EventPublishedMessage } from '../devtools/message/event-published-message';
 
 @NgModule()
 export class SagaRootModule {
@@ -16,10 +18,10 @@ export class SagaRootModule {
         this.devtools.send({
           type: 'COMMAND_PUBLISHED',
           command: {
-            type: command.constructor.name,
+            name: command.constructor.name,
             payload: command,
           },
-        });
+        } as CommandPublishedMessage);
       }),
     ).subscribe();
 
@@ -31,7 +33,7 @@ export class SagaRootModule {
             name: event.constructor.name,
             payload: event,
           },
-        });
+        } as EventPublishedMessage);
       }),
     ).subscribe();
   }
