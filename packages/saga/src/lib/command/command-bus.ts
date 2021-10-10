@@ -21,16 +21,16 @@ export class CommandBus {
 
   constructor(
     private readonly registry: CommandHandlerRegistry,
-    @Inject(SAGA_ROOT_OPTIONS) @Optional()
+    @Inject(SAGA_ROOT_OPTIONS)
+    @Optional()
     private readonly options?: SagaRootOptions,
-  ) {
-  }
+  ) {}
 
   /**
    * Publishes the given command.
    * Commands are being published asynchronously (in the next microtask) to preserve correct order.
    */
-  execute(command: ICommand): Promise<void | never> {
+  execute<TCommand extends ICommand>(command: TCommand): Promise<void | never> {
     return Promise.resolve().then(() => {
       if (this.options?.debug) {
         console.log(new Date().toISOString(), command);

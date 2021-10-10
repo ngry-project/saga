@@ -77,9 +77,7 @@ describe('PaymentFlow', () => {
     });
 
     beforeEach(async () => {
-      await testingBus.execute(
-        new BalanceTopUpCommand(balanceTopUpAmount, balanceTopUpContext)
-      );
+      await testingBus.execute(new BalanceTopUpCommand(balanceTopUpAmount, balanceTopUpContext));
     });
 
     beforeEach(async () => {

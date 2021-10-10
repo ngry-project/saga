@@ -19,8 +19,7 @@ export type PaymentResult = PaymentDone | PaymentFail;
   providedIn: 'root',
 })
 export class PaymentService {
-  constructor(private readonly balanceService: BalanceService) {
-  }
+  constructor(private readonly balanceService: BalanceService) {}
 
   submit(payment: PaymentDto): Observable<PaymentResult> {
     return this.balanceService.get().pipe(

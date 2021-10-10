@@ -6,14 +6,8 @@ import { BalanceModule } from './balance/balance.module';
 import { AppComponent } from './app.component';
 
 @NgModule({
-  imports: [
-    BrowserModule,
-    SagaModule.forRoot(),
-    BalanceModule,
-    PaymentModule,
-  ],
+  imports: [BrowserModule, SagaModule.forRoot(), BalanceModule, PaymentModule],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

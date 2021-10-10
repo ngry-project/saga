@@ -3,16 +3,27 @@
   "description": "Monitor events and commands",
   "version": "1.0",
   "manifest_version": 2,
-  "permissions": ["storage", "http://*/*", "https://*/*", "<all_urls>"],
+  "permissions": [
+    "storage",
+    "http://*/*",
+    "https://*/*",
+    "<all_urls>"
+  ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": [
+      "background.js"
+    ],
     "persistent": false
   },
   "devtools_page": "devtools.html",
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content-script.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content-script.js"
+      ],
       "run_at": "document_start"
     }
   ]

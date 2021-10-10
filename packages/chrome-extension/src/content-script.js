@@ -27,9 +27,7 @@ class UserAgent {
         if (chrome.runtime && !!chrome.runtime.getManifest()) {
           onMessage(message);
         } else {
-          console.log(
-            'Cannot send the message because of the Chrome Runtime manifest not available'
-          );
+          console.log('Cannot send the message because of the Chrome Runtime manifest not available');
         }
       }
     });

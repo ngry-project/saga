@@ -11,15 +11,10 @@ import { BalanceTopUpCommand } from './balance-top-up.command';
 @Injectable({
   providedIn: 'root',
 })
-export class BalanceTopUpHandler
-  implements ICommandHandler<BalanceTopUpCommand>
-{
+export class BalanceTopUpHandler implements ICommandHandler<BalanceTopUpCommand> {
   readonly executes = BalanceTopUpCommand;
 
-  constructor(
-    private readonly balanceService: BalanceService,
-    private readonly eventBus: EventBus
-  ) {}
+  constructor(private readonly balanceService: BalanceService, private readonly eventBus: EventBus) {}
 
   execute(command$: Observable<BalanceTopUpCommand>): Observable<unknown> {
     return command$.pipe(
@@ -29,19 +24,15 @@ export class BalanceTopUpHandler
             this.balanceService.topUp(form.amount).pipe(
               tap((result) => {
                 if (result) {
-                  this.eventBus.publish(
-                    new BalanceTopUpDoneEvent(form.amount, command.context)
-                  );
+                  this.eventBus.publish(new BalanceTopUpDoneEvent(form.amount, command.context));
                 } else {
-                  this.eventBus.publish(
-                    new BalanceTopUpFailEvent(form.amount, command.context)
-                  );
+                  this.eventBus.publish(new BalanceTopUpFailEvent(form.amount, command.context));
                 }
-              })
-            )
-          )
-        )
-      )
+              }),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -8,15 +8,8 @@ import { ICommandHandler } from './command-handler';
 import { CommandBus } from './command-bus';
 import { CommandHandlerRegistrar } from './command-handler-registrar';
 
-class TestContext {
-}
-
 class TestCommand implements ICommand {
-  constructor(
-    readonly payload: string,
-    readonly context = new TestContext(),
-  ) {
-  }
+  constructor(readonly payload: string) {}
 }
 
 @Injectable({
@@ -26,9 +19,7 @@ class TestHandler implements ICommandHandler<TestCommand> {
   executes = TestCommand;
 
   execute(command$: Observable<TestCommand>): Observable<unknown> {
-    return command$.pipe(
-      map(command => command.payload),
-    );
+    return command$.pipe(map((command) => command.payload));
   }
 }
 
@@ -83,7 +74,9 @@ describe('CommandBus', () => {
       });
 
       it('should throw an error', async () => {
-        await expect(commandBus.execute(command)).rejects.toThrow('No corresponding handler found for command TestCommand');
+        await expect(commandBus.execute(command)).rejects.toThrow(
+          'No corresponding handler found for command TestCommand',
+        );
       });
     });
   });

@@ -12,7 +12,7 @@ export class SagaFeatureModule {
     sagaRegistrar: SagaRegistrar,
   ) {
     for (const feature of features) {
-      const {commands = [], sagas = [], flows = []} = feature;
+      const { commands = [], sagas = [], flows = [] } = feature;
 
       for (const type of commands) {
         commandHandlerRegistrar.register(injector.get(type));

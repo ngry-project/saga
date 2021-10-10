@@ -15,10 +15,7 @@ export class PanelComponent {
 
   messages: Message[] = [];
 
-  constructor(
-    private readonly devtools: DevtoolsClient,
-    private readonly changeDetectorRef: ChangeDetectorRef,
-  ) {
+  constructor(private readonly devtools: DevtoolsClient, private readonly changeDetectorRef: ChangeDetectorRef) {
     this.devtools.messages$
       .pipe(
         tap((message) => {
