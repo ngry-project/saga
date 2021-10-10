@@ -4,7 +4,8 @@ import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Message } from './message/message';
 import { DevtoolsMessageMessage } from './message/devtools-message-message';
-import { ClientMessageMessage, ClientReadyMessage } from '@ngry/saga';
+import { ClientReadyMessage } from './message/client-ready-message';
+import { ClientMessageMessage } from './message/client-message-message';
 
 @Injectable({
   providedIn: 'root',
