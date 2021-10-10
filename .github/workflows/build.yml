@@ -5,34 +5,37 @@ on:
 jobs:
   saga:
     runs-on: ubuntu-latest
-    if: nx affected:libs | grep saga
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 15
       - run: npm install -g nx
+      - run: nx affected:libs | grep saga
+        continue-on-error: true
       - run: npm ci
       - run: nx run saga:build --verbose
   demo-app:
     runs-on: ubuntu-latest
-    if: nx affected:apps | grep demo-app
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 15
       - run: npm install -g nx
+      - run: nx affected:apps | grep demo-app
+        continue-on-error: true
       - run: npm ci
       - run: nx run demo-app:build --verbose
   chrome-extension:
     runs-on: ubuntu-latest
-    if: nx affected:apps | grep chrome-extension
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 15
       - run: npm install -g nx
+      - run: nx affected:apps | grep chrome-extension
+        continue-on-error: true
       - run: npm ci
       - run: nx run chrome-extension:build --verbose
