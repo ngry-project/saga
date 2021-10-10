@@ -13,7 +13,10 @@
     }
   },
   "projects": {
-    "example": {
+    "chrome-extension": {
+      "tags": []
+    },
+    "demo-app": {
       "tags": []
     },
     "saga": {

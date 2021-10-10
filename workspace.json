@@ -1,26 +1,32 @@
 {
   "version": 2,
   "projects": {
-    "example": {
+    "chrome-extension": {
       "projectType": "application",
-      "root": "packages/example",
-      "sourceRoot": "packages/example/src",
+      "root": "packages/chrome-extension",
+      "sourceRoot": "packages/chrome-extension/src",
       "prefix": "ny",
       "targets": {
         "build": {
           "executor": "@angular-devkit/build-angular:browser",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/packages/example",
-            "index": "packages/example/src/index.html",
-            "main": "packages/example/src/main.ts",
-            "polyfills": "packages/example/src/polyfills.ts",
-            "tsConfig": "packages/example/tsconfig.app.json",
+            "outputPath": "dist/packages/chrome-extension",
+            "index": "packages/chrome-extension/src/panel.html",
+            "main": "packages/chrome-extension/src/main.ts",
+            "polyfills": "packages/chrome-extension/src/polyfills.ts",
+            "tsConfig": "packages/chrome-extension/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
-              "packages/example/src/favicon.ico",
-              "packages/example/src/assets"
+              "packages/chrome-extension/src/favicon.ico",
+              "packages/chrome-extension/src/assets",
+              "packages/chrome-extension/src/manifest.json",
+              "packages/chrome-extension/src/devtools.html",
+              "packages/chrome-extension/src/devtools.js",
+              "packages/chrome-extension/src/background.js",
+              "packages/chrome-extension/src/content-script.js"
             ],
-            "styles": ["packages/example/src/styles.css"],
+            "styles": ["packages/chrome-extension/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -39,8 +45,100 @@
               ],
               "fileReplacements": [
                 {
-                  "replace": "packages/example/src/environments/environment.ts",
-                  "with": "packages/example/src/environments/environment.prod.ts"
+                  "replace": "packages/chrome-extension/src/environments/environment.ts",
+                  "with": "packages/chrome-extension/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-panel": {
+          "executor": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "chrome-extension:build:production"
+            },
+            "development": {
+              "browserTarget": "chrome-extension:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "executor": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "chrome-extension:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "packages/chrome-extension/src/**/*.ts",
+              "packages/chrome-extension/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/packages/chrome-extension"],
+          "options": {
+            "jestConfig": "packages/chrome-extension/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "demo-app": {
+      "projectType": "application",
+      "root": "packages/demo-app",
+      "sourceRoot": "packages/demo-app/src",
+      "prefix": "ny",
+      "targets": {
+        "build": {
+          "executor": "@angular-devkit/build-angular:browser",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/packages/demo-app",
+            "index": "packages/demo-app/src/index.html",
+            "main": "packages/demo-app/src/main.ts",
+            "polyfills": "packages/demo-app/src/polyfills.ts",
+            "tsConfig": "packages/demo-app/tsconfig.app.json",
+            "assets": [
+              "packages/demo-app/src/favicon.ico",
+              "packages/demo-app/src/assets"
+            ],
+            "styles": ["packages/demo-app/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "packages/demo-app/src/environments/environment.ts",
+                  "with": "packages/demo-app/src/environments/environment.prod.ts"
                 }
               ],
               "outputHashing": "all"
@@ -60,10 +158,10 @@
           "executor": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "example:build:production"
+              "browserTarget": "demo-app:build:production"
             },
             "development": {
-              "browserTarget": "example:build:development"
+              "browserTarget": "demo-app:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -71,23 +169,23 @@
         "extract-i18n": {
           "executor": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "example:build"
+            "browserTarget": "demo-app:build"
           }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "packages/example/src/**/*.ts",
-              "packages/example/src/**/*.html"
+              "packages/demo-app/src/**/*.ts",
+              "packages/demo-app/src/**/*.html"
             ]
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/packages/example"],
+          "outputs": ["coverage/packages/demo-app"],
           "options": {
-            "jestConfig": "packages/example/jest.config.js",
+            "jestConfig": "packages/demo-app/jest.config.js",
             "passWithNoTests": true
           }
         }
@@ -147,18 +245,18 @@
   },
   "generators": {
     "@nrwl/angular:application": {
-      "style": "css",
+      "style": "scss",
       "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "none"
     },
     "@nrwl/angular:library": {
-      "style": "css",
+      "style": "scss",
       "linter": "eslint",
       "unitTestRunner": "jest"
     },
     "@nrwl/angular:component": {
-      "style": "css"
+      "style": "scss"
     }
   },
   "defaultProject": "saga"

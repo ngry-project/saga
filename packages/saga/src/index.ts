@@ -20,4 +20,12 @@ export * from './lib/configuration/saga-root.module';
 
 export * from './lib/saga.module';
 
+export * from './lib/devtools/message/message';
+export * from './lib/devtools/message/client-ready-message';
+export * from './lib/devtools/message/client-message-message';
+export * from './lib/devtools/message/devtools-ready-message';
+export * from './lib/devtools/message/devtools-message-message';
+export * from './lib/devtools/message/command-published-message';
+export * from './lib/devtools/message/event-published-message';
+
 export * from './lib/testing/testing-bus';

@@ -3,7 +3,7 @@ on:
   - push
   - pull_request
 jobs:
-  lib:
+  saga:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,7 +13,7 @@ jobs:
       - run: npm install -g nx
       - run: npm ci
       - run: nx run saga:lint --verbose
-  app:
+  demo-app:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -22,4 +22,14 @@ jobs:
           node-version: 15
       - run: npm install -g nx
       - run: npm ci
-      - run: nx run example:lint --verbose
+      - run: nx run demo-app:lint --verbose
+  chrome-extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15
+      - run: npm install -g nx
+      - run: npm ci
+      - run: nx run chrome-extension:lint --verbose
