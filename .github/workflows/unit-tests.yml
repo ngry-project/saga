@@ -1,6 +1,5 @@
 name: unit-tests
 on:
-  - push
   - pull_request
 jobs:
   saga:
