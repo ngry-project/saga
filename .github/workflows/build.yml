@@ -5,6 +5,7 @@ on:
 jobs:
   saga:
     runs-on: ubuntu-latest
+    if: nx affected:libs | grep saga
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -15,6 +16,7 @@ jobs:
       - run: nx run saga:build --verbose
   demo-app:
     runs-on: ubuntu-latest
+    if: nx affected:apps | grep demo-app
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -25,6 +27,7 @@ jobs:
       - run: nx run demo-app:build --verbose
   chrome-extension:
     runs-on: ubuntu-latest
+    if: nx affected:apps | grep chrome-extension
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
