@@ -14,10 +14,10 @@ export class SagaRegistry {
   private readonly sagas = new Set<ISaga>();
 
   constructor(
-    @Inject(SAGA_ROOT_OPTIONS) @Optional()
+    @Inject(SAGA_ROOT_OPTIONS)
+    @Optional()
     private readonly options?: SagaRootOptions,
-  ) {
-  }
+  ) {}
 
   /**
    * Registers a unique saga.

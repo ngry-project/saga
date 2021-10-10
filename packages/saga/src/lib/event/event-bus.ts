@@ -19,16 +19,16 @@ export class EventBus {
   readonly events$: Observable<IEvent> = this._events$.asObservable();
 
   constructor(
-    @Inject(SAGA_ROOT_OPTIONS) @Optional()
+    @Inject(SAGA_ROOT_OPTIONS)
+    @Optional()
     private readonly options?: SagaRootOptions,
-  ) {
-  }
+  ) {}
 
   /**
    * Publishes the given event.
    * Events are being published asynchronously (in the next microtask) to preserve correct order.
    */
-  publish(event: IEvent): Promise<void> {
+  publish<TEvent extends IEvent>(event: TEvent): Promise<void> {
     return Promise.resolve().then(() => {
       if (this.options?.debug) {
         console.log(new Date().toISOString(), event);

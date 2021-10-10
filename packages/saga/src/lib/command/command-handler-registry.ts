@@ -15,10 +15,10 @@ export class CommandHandlerRegistry {
   private readonly handlers = new Map<Type<ICommand>, ICommandHandler>();
 
   constructor(
-    @Inject(SAGA_ROOT_OPTIONS) @Optional()
+    @Inject(SAGA_ROOT_OPTIONS)
+    @Optional()
     private readonly options?: SagaRootOptions,
-  ) {
-  }
+  ) {}
 
   /**
    * Resolves an {@link ICommandHandler} responsible for execution of the given command.

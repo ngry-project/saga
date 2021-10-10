@@ -1,7 +1,5 @@
 import { IEvent } from '@ngry/saga';
 
-export class BalanceTopUpFailEvent<TContext extends object = object>
-  implements IEvent<TContext>
-{
-  constructor(readonly amount: number, readonly context: TContext) {}
+export class BalanceTopUpFailEvent implements IEvent {
+  constructor(readonly amount: number, readonly context: unknown) {}
 }

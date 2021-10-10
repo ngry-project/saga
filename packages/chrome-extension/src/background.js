@@ -75,7 +75,7 @@ class BackgroundScript {
         (tabId) => {
           console.log('DevTools disconnected on tab', tabId);
           this.devtools.delete(tabId);
-        }
+        },
       );
     });
   }

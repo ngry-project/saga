@@ -1,7 +1,5 @@
 import { ICommand } from '@ngry/saga';
 
-export class BalanceTopUpCommand<TContext extends object = object>
-  implements ICommand<TContext>
-{
-  constructor(readonly initialAmount: number, readonly context: TContext) {}
+export class BalanceTopUpCommand implements ICommand {
+  constructor(readonly initialAmount: number, readonly context: unknown) {}
 }

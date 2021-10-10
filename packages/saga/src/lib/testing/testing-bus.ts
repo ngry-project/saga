@@ -18,10 +18,7 @@ export class TestingBus {
    */
   readonly sequence$: Observable<ICommand | IEvent>;
 
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly eventBus: EventBus,
-  ) {
+  constructor(private readonly commandBus: CommandBus, private readonly eventBus: EventBus) {
     this.sequence$ = merge(this.commandBus.commands$, this.eventBus.events$);
   }
 

@@ -24,10 +24,10 @@ export class SagaRegistrar {
     private readonly commandBus: CommandBus,
     private readonly eventBus: EventBus,
     private readonly registry: SagaRegistry,
-    @Inject(SAGA_ROOT_OPTIONS) @Optional()
+    @Inject(SAGA_ROOT_OPTIONS)
+    @Optional()
     private readonly options?: SagaRootOptions,
-  ) {
-  }
+  ) {}
 
   /**
    * Registers given saga in {@link SagaRegistry} to ensure sagas are unique.
@@ -40,19 +40,20 @@ export class SagaRegistrar {
 
     this.registry.register(saga);
 
-    this.eventBus.events$.pipe(
-      filter(event => event instanceof saga.handles),
-      filter(event => saga.within == null || event.context instanceof saga.within),
-      mergeMap(event => {
-        return saga.handle(of(event)).pipe(
-          catchError(error => {
-            console.error(error);
-            return EMPTY;
-          }),
-          tap(command => this.commandBus.execute(command)),
-        );
-      }),
-    ).subscribe();
+    this.eventBus.events$
+      .pipe(
+        filter((event) => event instanceof saga.handles),
+        mergeMap((event) => {
+          return saga.handle(of(event)).pipe(
+            catchError((error) => {
+              console.error(error);
+              return EMPTY;
+            }),
+            tap((command) => this.commandBus.execute(command)),
+          );
+        }),
+      )
+      .subscribe();
   }
 
   scan(flow: object): void {
@@ -62,7 +63,6 @@ export class SagaRegistrar {
       for (const [methodKey, definition] of metadata.definitions) {
         this.register({
           handles: definition.handles,
-          within: definition.within,
           handle(event$: Observable<IEvent>): Observable<ICommand> {
             return (flow as any)[methodKey](event$);
           },

@@ -9,5 +9,4 @@ import { PaymentFlow } from './flow/payment.flow';
     }),
   ],
 })
-export class PaymentModule {
-}
+export class PaymentModule {}

@@ -12,8 +12,7 @@ import { PaymentDto } from './payment/dto/payment.dto';
   `,
 })
 export class AppComponent {
-  constructor(private readonly commandBus: CommandBus) {
-  }
+  constructor(private readonly commandBus: CommandBus) {}
 
   start() {
     const payment: PaymentDto = {

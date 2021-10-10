@@ -6,15 +6,10 @@ import { ICommand } from './command';
 import { ICommandHandler } from './command-handler';
 import { CommandHandlerRegistry } from './command-handler-registry';
 
-class TestContext {
-}
+class TestContext {}
 
 class TestCommand implements ICommand {
-  constructor(
-    readonly payload: string,
-    readonly context = new TestContext(),
-  ) {
-  }
+  constructor(readonly payload: string, readonly context = new TestContext()) {}
 }
 
 @Injectable({
@@ -24,9 +19,7 @@ class TestHandler implements ICommandHandler<TestCommand> {
   executes = TestCommand;
 
   execute(command$: Observable<TestCommand>): Observable<unknown> {
-    return command$.pipe(
-      map(command => command.payload),
-    );
+    return command$.pipe(map((command) => command.payload));
   }
 }
 

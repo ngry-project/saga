@@ -14,8 +14,6 @@ export interface ISaga<TEvent extends IEvent = IEvent> {
    */
   readonly handles: Type<TEvent>;
 
-  readonly within?: TEvent extends IEvent<infer TContext> ? Type<TContext> : never;
-
   /**
    * Decides which command(s) should be executed in response to the given event.
    * @param event$ A stream which emits an event of the given type, then completes.

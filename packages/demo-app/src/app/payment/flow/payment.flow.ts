@@ -16,11 +16,7 @@ import { PaymentDto } from '../dto/payment.dto';
   providedIn: 'root',
 })
 export class PaymentFlow {
-  constructor(
-    private readonly eventBus: EventBus,
-    private readonly paymentService: PaymentService,
-  ) {
-  }
+  constructor(private readonly eventBus: EventBus, private readonly paymentService: PaymentService) {}
 
   @CommandHandler(PaymentCommand)
   start(command$: Observable<PaymentCommand>): Observable<unknown> {
@@ -32,19 +28,10 @@ export class PaymentFlow {
             this.paymentService.submit(payment).pipe(
               tap((result) => {
                 if (result.status === 'ok') {
-                  this.eventBus.publish(
-                    new PaymentDoneEvent(payment, command.context),
-                  );
+                  this.eventBus.publish(new PaymentDoneEvent(payment, command.context));
                 } else {
-                  this.eventBus.publish(
-                    new PaymentFailEvent(payment, command.context),
-                  );
-                  this.eventBus.publish(
-                    new InsufficientFundsEvent(
-                      result.insufficientAmount,
-                      command.context,
-                    ),
-                  );
+                  this.eventBus.publish(new PaymentFailEvent(payment, command.context));
+                  this.eventBus.publish(new InsufficientFundsEvent(result.insufficientAmount, command.context));
                 }
               }),
             ),
@@ -54,14 +41,11 @@ export class PaymentFlow {
     );
   }
 
-  @Saga(BalanceTopUpDoneEvent, {
-    within: PaymentContext,
-  })
-  retryAfterBalanceTopUp(
-    event$: Observable<BalanceTopUpDoneEvent<PaymentContext>>,
-  ): Observable<ICommand> {
+  @Saga(BalanceTopUpDoneEvent)
+  retryAfterBalanceTopUp(event$: Observable<BalanceTopUpDoneEvent>): Observable<ICommand> {
     return event$.pipe(
-      map((event) => new PaymentCommand(event.context.payment, event.context)),
+      filter((event) => event.context instanceof PaymentContext),
+      map((event) => new PaymentCommand((event.context as PaymentContext).payment, event.context)),
     );
   }
 }
