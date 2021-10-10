@@ -12,7 +12,6 @@ jobs:
           node-version: 15
       - run: npm install -g nx
       - run: nx affected:libs | grep saga
-        continue-on-error: true
       - run: npm ci
         if: success()
       - run: nx run saga:build --verbose
@@ -26,7 +25,6 @@ jobs:
           node-version: 15
       - run: npm install -g nx
       - run: nx affected:apps | grep demo-app
-        continue-on-error: true
       - run: npm ci
         if: success()
       - run: nx run demo-app:build --verbose
@@ -40,7 +38,6 @@ jobs:
           node-version: 15
       - run: npm install -g nx
       - run: nx affected:apps | grep chrome-extension
-        continue-on-error: true
       - run: npm ci
         if: success()
       - run: nx run chrome-extension:build --verbose
