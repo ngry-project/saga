@@ -14,7 +14,9 @@ jobs:
       - run: nx affected:libs | grep saga
         continue-on-error: true
       - run: npm ci
+        if: success()
       - run: nx run saga:build --verbose
+        if: success()
   demo-app:
     runs-on: ubuntu-latest
     steps:
@@ -26,7 +28,9 @@ jobs:
       - run: nx affected:apps | grep demo-app
         continue-on-error: true
       - run: npm ci
+        if: success()
       - run: nx run demo-app:build --verbose
+        if: success()
   chrome-extension:
     runs-on: ubuntu-latest
     steps:
@@ -38,4 +42,6 @@ jobs:
       - run: nx affected:apps | grep chrome-extension
         continue-on-error: true
       - run: npm ci
+        if: success()
       - run: nx run chrome-extension:build --verbose
+        if: success()
