@@ -43,11 +43,9 @@ export class CommandHandlerRegistrar {
         mergeMap((command) =>
           handler.execute(of(command)).pipe(
             catchError((error) => {
-              if (handler.rollback) {
-                return handler.rollback(of(command), error);
-              } else {
-                return EMPTY;
-              }
+              console.error(command, 'execution failed with', error);
+
+              return EMPTY;
             }),
           ),
         ),
