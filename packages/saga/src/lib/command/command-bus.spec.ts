@@ -7,8 +7,13 @@ import { ICommand } from './command';
 import { ICommandHandler } from './command-handler';
 import { CommandBus } from './command-bus';
 import { CommandHandlerRegistrar } from './command-handler-registrar';
+import { IEvent } from '../event/event';
 
 class TestCommand implements ICommand {
+  constructor(readonly payload: string) {}
+}
+
+class TestDoneEvent implements IEvent {
   constructor(readonly payload: string) {}
 }
 
@@ -18,8 +23,8 @@ class TestCommand implements ICommand {
 class TestHandler implements ICommandHandler<TestCommand> {
   executes = TestCommand;
 
-  execute(command$: Observable<TestCommand>): Observable<unknown> {
-    return command$.pipe(map((command) => command.payload));
+  execute(command$: Observable<TestCommand>): Observable<IEvent> {
+    return command$.pipe(map((command) => new TestDoneEvent(command.payload)));
   }
 }
 

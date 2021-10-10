@@ -5,11 +5,16 @@ import { TestBed } from '@angular/core/testing';
 import { ICommand } from './command';
 import { ICommandHandler } from './command-handler';
 import { CommandHandlerRegistry } from './command-handler-registry';
+import { IEvent } from '../event/event';
 
 class TestContext {}
 
 class TestCommand implements ICommand {
-  constructor(readonly payload: string, readonly context = new TestContext()) {}
+  constructor(readonly payload: string, readonly context: unknown) {}
+}
+
+class TestDoneEvent implements IEvent {
+  constructor(readonly payload: string, readonly context: unknown) {}
 }
 
 @Injectable({
@@ -18,8 +23,8 @@ class TestCommand implements ICommand {
 class TestHandler implements ICommandHandler<TestCommand> {
   executes = TestCommand;
 
-  execute(command$: Observable<TestCommand>): Observable<unknown> {
-    return command$.pipe(map((command) => command.payload));
+  execute(command$: Observable<TestCommand>): Observable<IEvent> {
+    return command$.pipe(map((command) => new TestDoneEvent(command.payload, command.context)));
   }
 }
 
@@ -39,7 +44,7 @@ describe('CommandHandlerRegistry', () => {
 
     describe('when command type does not have an corresponding handler yet', () => {
       it('should register the command handler', () => {
-        expect(registry.resolve(new TestCommand('hello'))).toBeInstanceOf(TestHandler);
+        expect(registry.resolve(new TestCommand('hello', new TestContext()))).toBeInstanceOf(TestHandler);
       });
     });
 
@@ -56,7 +61,7 @@ describe('CommandHandlerRegistry', () => {
     describe('when command type does not have an corresponding handler', () => {
       it('should throw an error', () => {
         expect(() => {
-          registry.resolve(new TestCommand('hello'));
+          registry.resolve(new TestCommand('hello', new TestContext()));
         }).toThrow(`No corresponding handler found for command ${TestCommand.name}`);
       });
     });
@@ -67,7 +72,7 @@ describe('CommandHandlerRegistry', () => {
       });
 
       it('should return an instance of an corresponding command handler', () => {
-        expect(registry.resolve(new TestCommand('hello'))).toBe(handler);
+        expect(registry.resolve(new TestCommand('hello', new TestContext()))).toBe(handler);
       });
     });
   });

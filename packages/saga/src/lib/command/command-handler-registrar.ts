@@ -1,5 +1,5 @@
 import { EMPTY, Observable, of } from 'rxjs';
-import { catchError, filter, mergeMap } from 'rxjs/operators';
+import { catchError, filter, mergeMap, tap } from 'rxjs/operators';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 import { ICommand } from './command';
@@ -7,6 +7,8 @@ import { ICommandHandler } from './command-handler';
 import { CommandBus } from './command-bus';
 import { CommandHandlerRegistry } from './command-handler-registry';
 import { COMMAND_HANDLER_METADATA, CommandHandlerMetadata } from './command-handler.decorator';
+import { IEvent } from '../event/event';
+import { EventBus } from '../event/event-bus';
 
 /**
  * Represents a command handler registrar.
@@ -20,6 +22,7 @@ import { COMMAND_HANDLER_METADATA, CommandHandlerMetadata } from './command-hand
 export class CommandHandlerRegistrar {
   constructor(
     private readonly commandBus: CommandBus,
+    private readonly eventBus: EventBus,
     private readonly registry: CommandHandlerRegistry,
     @Inject(SAGA_ROOT_OPTIONS)
     @Optional()
@@ -47,6 +50,9 @@ export class CommandHandlerRegistrar {
 
               return EMPTY;
             }),
+            tap((event) => {
+              this.eventBus.publish(event);
+            }),
           ),
         ),
       )
@@ -63,7 +69,7 @@ export class CommandHandlerRegistrar {
       for (const [methodKey, executes] of metadata.handlers) {
         this.register({
           executes,
-          execute(command$: Observable<ICommand>): Observable<unknown> {
+          execute(command$: Observable<ICommand>): Observable<IEvent> {
             return (flow as any)[methodKey](command$);
           },
         });

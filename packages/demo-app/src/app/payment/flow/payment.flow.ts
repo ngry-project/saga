@@ -1,7 +1,7 @@
-import { Observable } from 'rxjs';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { CommandHandler, EventBus, ICommand, Saga } from '@ngry/saga';
+import { CommandHandler, EventBus, ICommand, IEvent, Saga } from '@ngry/saga';
 import { InsufficientFundsEvent } from '../../balance/event/insufficient-funds.event';
 import { BalanceTopUpDoneEvent } from '../../balance/event/balance-top-up-done.event';
 import { PaymentCommand } from '../command/payment.command';
@@ -19,19 +19,21 @@ export class PaymentFlow {
   constructor(private readonly eventBus: EventBus, private readonly paymentService: PaymentService) {}
 
   @CommandHandler(PaymentCommand)
-  start(command$: Observable<PaymentCommand>): Observable<unknown> {
+  start(command$: Observable<PaymentCommand>): Observable<IEvent> {
     return command$.pipe(
       switchMap((command) =>
         new PaymentDialog().afterClosed().pipe(
           filter((payment): payment is PaymentDto => payment != null),
           switchMap((payment) =>
             this.paymentService.submit(payment).pipe(
-              tap((result) => {
+              switchMap((result) => {
                 if (result.status === 'ok') {
-                  this.eventBus.publish(new PaymentDoneEvent(payment, command.context));
+                  return of(new PaymentDoneEvent(payment, command.context));
                 } else {
-                  this.eventBus.publish(new PaymentFailEvent(payment, command.context));
-                  this.eventBus.publish(new InsufficientFundsEvent(result.insufficientAmount, command.context));
+                  return of(
+                    new PaymentFailEvent(payment, command.context),
+                    new InsufficientFundsEvent(result.insufficientAmount, command.context),
+                  );
                 }
               }),
             ),
