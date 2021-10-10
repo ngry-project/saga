@@ -4,7 +4,7 @@ on:
     branches:
       - master
 jobs:
-  release:
+  saga:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

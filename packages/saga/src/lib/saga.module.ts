@@ -6,7 +6,7 @@ import { SagaFeatureModule } from './configuration/saga-feature.module';
 
 @NgModule()
 export class SagaModule {
-  static forRoot(options: SagaRootOptions): ModuleWithProviders<SagaRootModule> {
+  static forRoot(options: SagaRootOptions = {}): ModuleWithProviders<SagaRootModule> {
     return {
       ngModule: SagaRootModule,
       providers: [

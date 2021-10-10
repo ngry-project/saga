@@ -1,0 +1,14 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+h1 {
+  padding: 8px 24px;
+}
+
+.type-cell {
+  width: 0;
+}
