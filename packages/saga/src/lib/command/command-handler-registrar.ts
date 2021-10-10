@@ -8,7 +8,7 @@ import { CommandBus } from './command-bus';
 import { CommandHandlerRegistry } from './command-handler-registry';
 import { COMMAND_HANDLER_METADATA, CommandHandlerMetadata } from './command-handler.decorator';
 import { IEvent } from '../event/event';
-import { EventBus } from '@ngry/saga';
+import { EventBus } from '../event/event-bus';
 
 /**
  * Represents a command handler registrar.
