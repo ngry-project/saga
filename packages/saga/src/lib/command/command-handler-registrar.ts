@@ -1,5 +1,5 @@
-import { EMPTY, Observable, of } from 'rxjs';
-import { catchError, filter, mergeMap, tap } from 'rxjs/operators';
+import { EMPTY, Observable, of, Subscription, Unsubscribable } from 'rxjs';
+import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 import { ICommand } from './command';
@@ -37,14 +37,14 @@ export class CommandHandlerRegistrar {
    * Registers given command handler in {@link CommandHandlerRegistry} to ensure command of specific type has only one handler.
    * Subscribes given command handler to {@link CommandBus} to execute published commands of specific type.
    */
-  register(handler: ICommandHandler): void {
+  register(handler: ICommandHandler): Unsubscribable {
     if (this.options?.debug) {
       console.log(new Date().toISOString(), handler);
     }
 
     this.registry.register(handler);
 
-    this.commandBus.commands$
+    return this.commandBus.commands$
       .pipe(
         filter((command) => command instanceof handler.executes),
         mergeMap((command) =>
@@ -53,30 +53,35 @@ export class CommandHandlerRegistrar {
               console.error(command, 'execution failed with', error);
               return EMPTY;
             }),
-            tap((event) => {
+            map((event) =>
               this.eventRepository.persist(event, {
                 sourceCommandId: this.commandRepository.getId(command),
-              });
-              this.eventBus.publish(event);
-            }),
+              }),
+            ),
+            tap((event) => this.eventBus.publish(event)),
           ),
         ),
       )
       .subscribe();
   }
 
-  scan(saga: object): void {
+  scan(saga: object): Unsubscribable {
     const metadata = SagaMetadata.of(saga.constructor.prototype);
+    const subscription = new Subscription();
 
     if (metadata) {
       for (const [methodKey, executes] of metadata.commandHandlers) {
-        this.register({
-          executes,
-          execute(command$: Observable<ICommand>): Observable<IEvent> {
-            return (saga as any)[methodKey](command$);
-          },
-        });
+        subscription.add(
+          this.register({
+            executes,
+            execute(command$: Observable<ICommand>): Observable<IEvent> {
+              return (saga as any)[methodKey](command$);
+            },
+          }),
+        );
       }
     }
+
+    return subscription;
   }
 }
