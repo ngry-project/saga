@@ -21,9 +21,9 @@ import { SagaMetadata } from '../saga/saga-metadata';
  * ```
  */
 export function CommandHandler(executes: Type<ICommand>): MethodDecorator {
-  return (target, propertyKey) => {
+  return (target, methodKey) => {
     const metadata = SagaMetadata.of(target);
 
-    metadata.addCommandHandler(propertyKey, executes);
+    metadata.addCommandHandler(methodKey, executes);
   };
 }
