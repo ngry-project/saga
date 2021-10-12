@@ -9,6 +9,8 @@ import { CommandHandlerRegistry } from './command-handler-registry';
 import { COMMAND_HANDLER_METADATA, CommandHandlerMetadata } from './command-handler.decorator';
 import { IEvent } from '../event/event';
 import { EventBus } from '../event/event-bus';
+import { EventRepository } from '../event/event-repository';
+import { CommandRepository } from './command-repository';
 
 /**
  * Represents a command handler registrar.
@@ -24,6 +26,8 @@ export class CommandHandlerRegistrar {
     private readonly commandBus: CommandBus,
     private readonly eventBus: EventBus,
     private readonly registry: CommandHandlerRegistry,
+    private readonly commandRepository: CommandRepository,
+    private readonly eventRepository: EventRepository,
     @Inject(SAGA_ROOT_OPTIONS)
     @Optional()
     private readonly options?: SagaRootOptions,
@@ -47,10 +51,12 @@ export class CommandHandlerRegistrar {
           handler.execute(of(command)).pipe(
             catchError((error) => {
               console.error(command, 'execution failed with', error);
-
               return EMPTY;
             }),
             tap((event) => {
+              this.eventRepository.persist(event, {
+                sourceCommandId: this.commandRepository.getId(command),
+              });
               this.eventBus.publish(event);
             }),
           ),

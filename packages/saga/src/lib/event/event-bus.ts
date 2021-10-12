@@ -2,6 +2,7 @@ import { Observable, Subject } from 'rxjs';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 import { IEvent } from './event';
+import { EventRepository } from './event-repository';
 
 /**
  * Represents an event bus.
@@ -19,6 +20,7 @@ export class EventBus {
   readonly events$: Observable<IEvent> = this._events$.asObservable();
 
   constructor(
+    private readonly eventRepository: EventRepository,
     @Inject(SAGA_ROOT_OPTIONS)
     @Optional()
     private readonly options?: SagaRootOptions,
@@ -30,6 +32,8 @@ export class EventBus {
    */
   publish<TEvent extends IEvent>(event: TEvent): Promise<void> {
     return Promise.resolve().then(() => {
+      this.eventRepository.persist(event);
+
       if (this.options?.debug) {
         console.log(new Date().toISOString(), event);
       }

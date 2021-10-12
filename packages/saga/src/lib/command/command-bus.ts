@@ -3,6 +3,7 @@ import { Inject, Injectable, Optional } from '@angular/core';
 import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 import { ICommand } from './command';
 import { CommandHandlerRegistry } from './command-handler-registry';
+import { CommandRepository } from './command-repository';
 
 /**
  * Represents a command bus.
@@ -21,6 +22,7 @@ export class CommandBus {
 
   constructor(
     private readonly registry: CommandHandlerRegistry,
+    private readonly commandRepository: CommandRepository,
     @Inject(SAGA_ROOT_OPTIONS)
     @Optional()
     private readonly options?: SagaRootOptions,
@@ -32,6 +34,8 @@ export class CommandBus {
    */
   execute<TCommand extends ICommand>(command: TCommand): Promise<void | never> {
     return Promise.resolve().then(() => {
+      this.commandRepository.persist(command);
+
       if (this.options?.debug) {
         console.log(new Date().toISOString(), command);
       }

@@ -6,9 +6,11 @@ export * from './lib/command/command';
 export * from './lib/command/command-bus';
 export * from './lib/command/command-handler';
 export * from './lib/command/command-handler.decorator';
+export * from './lib/command/command-metadata';
 
 export * from './lib/event/event';
 export * from './lib/event/event-bus';
+export * from './lib/event/event-metadata';
 
 export * from './lib/saga/saga';
 export * from './lib/saga/saga.decorator';

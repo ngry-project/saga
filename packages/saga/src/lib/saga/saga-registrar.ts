@@ -9,6 +9,8 @@ import { EventBus } from '../event/event-bus';
 import { ISaga } from './saga';
 import { SAGA_METADATA, SagaMetadata } from './saga.decorator';
 import { SagaRegistry } from './saga-registry';
+import { EventRepository } from '../event/event-repository';
+import { CommandRepository } from '../command/command-repository';
 
 /**
  * Represents saga registrar.
@@ -24,6 +26,8 @@ export class SagaRegistrar {
     private readonly commandBus: CommandBus,
     private readonly eventBus: EventBus,
     private readonly registry: SagaRegistry,
+    private readonly commandRepository: CommandRepository,
+    private readonly eventRepository: EventRepository,
     @Inject(SAGA_ROOT_OPTIONS)
     @Optional()
     private readonly options?: SagaRootOptions,
@@ -46,10 +50,15 @@ export class SagaRegistrar {
         mergeMap((event) => {
           return saga.handle(of(event)).pipe(
             catchError((error) => {
-              console.error(error);
+              console.error(event, 'handler failed with', error);
               return EMPTY;
             }),
-            tap((command) => this.commandBus.execute(command)),
+            tap((command) => {
+              this.commandRepository.persist(command, {
+                sourceEventId: this.eventRepository.getId(event),
+              });
+              this.commandBus.execute(command);
+            }),
           );
         }),
       )
