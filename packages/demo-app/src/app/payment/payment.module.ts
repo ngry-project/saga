@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { SagaModule } from '@ngry/saga';
-import { PaymentFlow } from './flow/payment.flow';
+import { PaymentSaga } from './saga/payment.saga';
 
 @NgModule({
   imports: [
     SagaModule.forFeature({
-      flows: [PaymentFlow],
+      sagas: [PaymentSaga],
     }),
   ],
 })
