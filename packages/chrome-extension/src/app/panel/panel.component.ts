@@ -1,4 +1,5 @@
-import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { filter, scan, startWith, switchMap, tap } from 'rxjs/operators';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { Message } from '@ngry/saga';
 import { DevtoolsClient } from '../core/client/devtools-client';
@@ -13,16 +14,21 @@ export class PanelComponent {
   @Input()
   target: 'panel' | 'tooltip' = 'panel';
 
-  messages: Message[] = [];
+  readonly ready$: Observable<boolean>;
+  readonly messages$: Observable<Message[]>;
 
   constructor(private readonly devtools: DevtoolsClient, private readonly changeDetectorRef: ChangeDetectorRef) {
-    this.devtools.messages$
-      .pipe(
-        tap((message) => {
-          this.messages.push(message);
-          this.changeDetectorRef.detectChanges();
-        }),
-      )
-      .subscribe();
+    this.ready$ = devtools.ready$.pipe(tap(() => setTimeout(() => this.changeDetectorRef.detectChanges())));
+
+    this.messages$ = this.devtools.ready$.pipe(
+      filter(Boolean),
+      switchMap(() => {
+        return this.devtools.messages$.pipe(
+          scan((messages: Message[], message: Message) => [...messages, message], []),
+          startWith([]),
+          tap(() => setTimeout(() => this.changeDetectorRef.detectChanges())),
+        );
+      }),
+    );
   }
 }

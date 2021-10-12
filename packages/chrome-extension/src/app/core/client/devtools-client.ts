@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import {
   ClientMessageMessage,
@@ -12,20 +12,27 @@ import {
   providedIn: 'root',
 })
 export class DevtoolsClient {
+  private readonly PORT_NAME = 'Saga Devtools';
   private readonly SOURCE = 'SagaDevtools';
 
   private readonly port: chrome.runtime.Port;
+  private readonly ready$$ = new BehaviorSubject<boolean>(false);
   private readonly messages$$ = new Subject<Message>();
 
+  readonly ready$ = this.ready$$.asObservable();
   readonly messages$ = this.messages$$.asObservable();
 
   constructor() {
     this.port = chrome.runtime.connect({
-      name: 'Saga Devtools',
+      name: this.PORT_NAME,
     });
 
     this.port.onMessage.addListener((message: ClientReadyMessage | ClientMessageMessage) => {
       if (message.source === this.SOURCE) {
+        if (message.type === 'CLIENT_READY') {
+          this.ready$$.next(true);
+        }
+
         if (message.type === 'CLIENT_MESSAGE') {
           this.messages$$.next(message.message);
         }
