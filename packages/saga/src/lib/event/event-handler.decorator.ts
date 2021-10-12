@@ -21,9 +21,9 @@ import { SagaMetadata } from '../saga/saga-metadata';
  * ```
  */
 export function EventHandler(handles: Type<IEvent>): MethodDecorator {
-  return (target, propertyKey) => {
+  return (target, methodKey) => {
     const metadata = SagaMetadata.of(target);
 
-    metadata.addEventHandler(propertyKey, handles);
+    metadata.addEventHandler(methodKey, handles);
   };
 }

@@ -1,11 +1,14 @@
 import { Observable, of } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { distinctUntilKeyChanged, filter, map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { CommandHandler, EventHandler, ICommand, IEvent } from '@ngry/saga';
+import { NavigationEnd, Router } from '@angular/router';
+import { CommandHandler, EventHandler, EventPublisher, ICommand, IEvent } from '@ngry/saga';
+import { ofType } from '@ngry/rx';
 import { InsufficientFundsEvent } from '../../balance/event/insufficient-funds.event';
 import { BalanceTopUpDoneEvent } from '../../balance/event/balance-top-up-done.event';
 import { PaymentCommand } from '../command/payment.command';
 import { PaymentDialog } from '../component/payment-dialog';
+import { PaymentInitEvent } from '../event/payment-init.event';
 import { PaymentDoneEvent } from '../event/payment-done.event';
 import { PaymentFailEvent } from '../event/payment-fail.event';
 import { PaymentService } from '../service/payment.service';
@@ -16,10 +19,29 @@ import { PaymentDto } from '../dto/payment.dto';
   providedIn: 'root',
 })
 export class PaymentSaga {
-  constructor(private readonly paymentService: PaymentService) {}
+  @EventPublisher()
+  readonly init$ = this.router.events.pipe(
+    ofType(NavigationEnd),
+    map(() => this.router.getCurrentNavigation()?.finalUrl?.queryParams ?? {}),
+    distinctUntilKeyChanged('dialog'),
+    filter((params) => params.dialog === 'payment'),
+    map((params) => {
+      const payment: PaymentDto = {
+        amount: parseFloat(params.amount ?? '0'),
+      };
+      return new PaymentInitEvent(payment, new PaymentContext(payment));
+    }),
+  );
+
+  constructor(private readonly router: Router, private readonly paymentService: PaymentService) {}
+
+  @EventHandler(PaymentInitEvent)
+  init(event$: Observable<PaymentInitEvent>): Observable<ICommand> {
+    return event$.pipe(map((event) => new PaymentCommand(event.initial, event.context)));
+  }
 
   @CommandHandler(PaymentCommand)
-  start(command$: Observable<PaymentCommand>): Observable<IEvent> {
+  makePayment(command$: Observable<PaymentCommand>): Observable<IEvent> {
     return command$.pipe(
       switchMap((command) =>
         new PaymentDialog().afterClosed().pipe(

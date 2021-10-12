@@ -1,28 +1,31 @@
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { ObservableSpy } from '@ngry/rx';
-import { PaymentDoneEvent } from '../src/app/payment/event/payment-done.event';
-import { AppModule } from '../src/app/app.module';
-import { IEvent } from '../../saga/src/lib/event/event';
-import { BalanceTopUpCommand } from '../src/app/balance/command/balance-top-up.command';
-import { PaymentFailEvent } from '../src/app/payment/event/payment-fail.event';
-import { PaymentContext } from '../src/app/payment/context/payment.context';
-import { TestingBus } from '../../saga/src/lib/testing/testing-bus';
-import { PaymentDto } from '../src/app/payment/dto/payment.dto';
-import { ICommand } from '../../saga/src/lib/command/command';
-import { PaymentCommand } from '../src/app/payment/command/payment.command';
-import { InsufficientFundsEvent } from '../src/app/balance/event/insufficient-funds.event';
-import { BalanceTopUpContext } from '../src/app/balance/context/balance-top-up.context';
-import { BalanceTopUpDoneEvent } from '../src/app/balance/event/balance-top-up-done.event';
+import { ICommand, IEvent, TestingBus } from '@ngry/saga';
+import { PaymentDoneEvent } from '../event/payment-done.event';
+import { AppModule } from '../../app.module';
+import { BalanceTopUpCommand } from '../../balance/command/balance-top-up.command';
+import { PaymentFailEvent } from '../event/payment-fail.event';
+import { PaymentContext } from '../context/payment.context';
+import { PaymentDto } from '../dto/payment.dto';
+import { PaymentCommand } from '../command/payment.command';
+import { InsufficientFundsEvent } from '../../balance/event/insufficient-funds.event';
+import { BalanceTopUpContext } from '../../balance/context/balance-top-up.context';
+import { BalanceTopUpDoneEvent } from '../../balance/event/balance-top-up-done.event';
+import { Router } from '@angular/router';
+import { PaymentInitEvent } from '../event/payment-init.event';
 
-describe('PaymentFlow', () => {
+describe('PaymentSaga', () => {
+  let router: Router;
   let testingBus: TestingBus;
   let sequenceSpy: ObservableSpy<ICommand | IEvent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, RouterTestingModule],
     });
 
+    router = TestBed.inject(Router);
     testingBus = TestBed.inject(TestingBus);
   });
 
@@ -41,12 +44,19 @@ describe('PaymentFlow', () => {
       paymentContext = new PaymentContext(payment);
     });
 
-    beforeEach(() => {
-      testingBus.execute(new PaymentCommand(payment, paymentContext));
+    beforeEach(async () => {
+      await router.navigate([], {
+        queryParams: {
+          dialog: 'payment',
+          amount: 100,
+        },
+      });
     });
 
     it('should request balance top-up', () => {
-      expect(sequenceSpy.values).toEqual([
+      expect(sequenceSpy.values).toStrictEqual([
+        new PaymentInitEvent(payment, paymentContext),
+
         new PaymentCommand(payment, paymentContext),
         new PaymentFailEvent(payment, paymentContext),
         new InsufficientFundsEvent(payment.amount, paymentContext),
@@ -81,7 +91,12 @@ describe('PaymentFlow', () => {
     });
 
     beforeEach(async () => {
-      await testingBus.execute(new PaymentCommand(payment, paymentContext));
+      await router.navigate([], {
+        queryParams: {
+          dialog: 'payment',
+          amount: 100,
+        },
+      });
     });
 
     it('should not request balance top-up', () => {
@@ -89,6 +104,7 @@ describe('PaymentFlow', () => {
         new BalanceTopUpCommand(balanceTopUpAmount, balanceTopUpContext),
         new BalanceTopUpDoneEvent(balanceTopUpAmount, balanceTopUpContext),
 
+        new PaymentInitEvent(payment, paymentContext),
         new PaymentCommand(payment, paymentContext),
         new PaymentDoneEvent(payment, paymentContext),
       ]);

@@ -13,6 +13,8 @@ export * from './lib/event/event-bus';
 export * from './lib/event/event-handler';
 export * from './lib/event/event-handler.decorator';
 export * from './lib/event/event-metadata';
+export * from './lib/event/event-publisher';
+export * from './lib/event/event-publisher.decorator';
 
 export * from './lib/configuration/saga-feature-options';
 export * from './lib/configuration/saga-feature.module';
