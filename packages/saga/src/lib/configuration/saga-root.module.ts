@@ -5,12 +5,16 @@ import { EventBus } from '../event/event-bus';
 import { DevtoolsRemote } from '../devtools/devtools-remote';
 import { CommandPublishedMessage } from '../devtools/message/command-published-message';
 import { EventPublishedMessage } from '../devtools/message/event-published-message';
+import { CommandRepository } from '../command/command-repository';
+import { EventRepository } from '../event/event-repository';
 
 @NgModule()
 export class SagaRootModule {
   constructor(
     private readonly commandBus: CommandBus,
+    private readonly commandRepository: CommandRepository,
     private readonly eventBus: EventBus,
+    private readonly eventRepository: EventRepository,
     private readonly devtools: DevtoolsRemote,
   ) {
     this.commandBus.commands$
@@ -20,6 +24,7 @@ export class SagaRootModule {
             type: 'COMMAND_PUBLISHED',
             command: {
               name: command.constructor.name,
+              metadata: this.commandRepository.getMetadata(command),
               payload: command,
             },
           } as CommandPublishedMessage);
@@ -34,6 +39,7 @@ export class SagaRootModule {
             type: 'EVENT_PUBLISHED',
             event: {
               name: event.constructor.name,
+              metadata: this.eventRepository.getMetadata(event),
               payload: event,
             },
           } as EventPublishedMessage);

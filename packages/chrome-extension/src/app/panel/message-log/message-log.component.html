@@ -1,0 +1,19 @@
+<h1>Messages:</h1>
+<table>
+  <thead>
+  <tr>
+    <th>Type</th>
+    <th>Content</th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngIf="messages">
+    <tr *ngFor="let message of messages">
+      <td class="type-cell">{{ message.type }}</td>
+      <td class="content-cell">
+        <pre>{{ message | json }}</pre>
+      </td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>
