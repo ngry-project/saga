@@ -1,23 +1,29 @@
-import 'reflect-metadata';
 import { Type } from '@angular/core';
 import { ICommand } from './command';
+import { SagaMetadata } from '../saga/saga-metadata';
 
-export const COMMAND_HANDLER_METADATA = Symbol();
-
-export class CommandHandlerMetadata {
-  readonly handlers = new Map<PropertyKey, Type<ICommand>>();
-}
-
+/**
+ * Marks method as the command handler.
+ * This method will be invoked to execute a single command of given type emitted by {@link CommandBus}.
+ * Method receives a stream that emits a single command, then completes.
+ * Method returns a stream of events produced during the command execution.
+ *
+ * @example
+ *
+ * ```ts
+ * @CommandHandler(MakePaymentCommand)
+ * makePayment(command$: Observable<MakePaymentCommand>): Observable<IEvent> {
+ *   return command$.pipe(
+ *     ...
+ *     map(command => new PaymentDoneEvent(command.payment));
+ *   );
+ * }
+ * ```
+ */
 export function CommandHandler(executes: Type<ICommand>): MethodDecorator {
   return (target, propertyKey) => {
-    let metadata: CommandHandlerMetadata | undefined = Reflect.getMetadata(COMMAND_HANDLER_METADATA, target);
+    const metadata = SagaMetadata.of(target);
 
-    if (!metadata) {
-      metadata = new CommandHandlerMetadata();
-
-      Reflect.defineMetadata(COMMAND_HANDLER_METADATA, metadata, target);
-    }
-
-    metadata.handlers.set(propertyKey, executes);
+    metadata.addCommandHandler(propertyKey, executes);
   };
 }

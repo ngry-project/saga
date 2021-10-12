@@ -1,11 +1,11 @@
 import { InjectionToken, Type } from '@angular/core';
 import { ICommandHandler } from '../command/command-handler';
-import { ISaga } from '../saga/saga';
+import { IEventHandler } from '../event/event-handler';
 
 export interface SagaFeatureOptions {
   commands?: Array<Type<ICommandHandler>>;
-  sagas?: Array<Type<ISaga>>;
-  flows?: Array<Type<object>>;
+  events?: Array<Type<IEventHandler>>;
+  sagas?: Array<Type<object>>;
 }
 
 export const SAGA_FEATURE_OPTIONS = new InjectionToken<SagaFeatureOptions>('SagaFeatureOptions');

@@ -10,10 +10,9 @@ export * from './lib/command/command-metadata';
 
 export * from './lib/event/event';
 export * from './lib/event/event-bus';
+export * from './lib/event/event-handler';
+export * from './lib/event/event-handler.decorator';
 export * from './lib/event/event-metadata';
-
-export * from './lib/saga/saga';
-export * from './lib/saga/saga.decorator';
 
 export * from './lib/configuration/saga-feature-options';
 export * from './lib/configuration/saga-feature.module';

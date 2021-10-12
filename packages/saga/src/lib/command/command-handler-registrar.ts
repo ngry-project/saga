@@ -6,11 +6,11 @@ import { ICommand } from './command';
 import { ICommandHandler } from './command-handler';
 import { CommandBus } from './command-bus';
 import { CommandHandlerRegistry } from './command-handler-registry';
-import { COMMAND_HANDLER_METADATA, CommandHandlerMetadata } from './command-handler.decorator';
+import { CommandRepository } from './command-repository';
 import { IEvent } from '../event/event';
 import { EventBus } from '../event/event-bus';
 import { EventRepository } from '../event/event-repository';
-import { CommandRepository } from './command-repository';
+import { SagaMetadata } from '../saga/saga-metadata';
 
 /**
  * Represents a command handler registrar.
@@ -65,18 +65,15 @@ export class CommandHandlerRegistrar {
       .subscribe();
   }
 
-  scan(flow: object): void {
-    const metadata: CommandHandlerMetadata | undefined = Reflect.getMetadata(
-      COMMAND_HANDLER_METADATA,
-      flow.constructor.prototype,
-    );
+  scan(saga: object): void {
+    const metadata = SagaMetadata.of(saga.constructor.prototype);
 
     if (metadata) {
-      for (const [methodKey, executes] of metadata.handlers) {
+      for (const [methodKey, executes] of metadata.commandHandlers) {
         this.register({
           executes,
           execute(command$: Observable<ICommand>): Observable<IEvent> {
-            return (flow as any)[methodKey](command$);
+            return (saga as any)[methodKey](command$);
           },
         });
       }

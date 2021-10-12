@@ -1,7 +1,7 @@
 import { Observable, of } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { CommandHandler, EventBus, ICommand, IEvent, Saga } from '@ngry/saga';
+import { CommandHandler, EventHandler, ICommand, IEvent } from '@ngry/saga';
 import { InsufficientFundsEvent } from '../../balance/event/insufficient-funds.event';
 import { BalanceTopUpDoneEvent } from '../../balance/event/balance-top-up-done.event';
 import { PaymentCommand } from '../command/payment.command';
@@ -15,8 +15,8 @@ import { PaymentDto } from '../dto/payment.dto';
 @Injectable({
   providedIn: 'root',
 })
-export class PaymentFlow {
-  constructor(private readonly eventBus: EventBus, private readonly paymentService: PaymentService) {}
+export class PaymentSaga {
+  constructor(private readonly paymentService: PaymentService) {}
 
   @CommandHandler(PaymentCommand)
   start(command$: Observable<PaymentCommand>): Observable<IEvent> {
@@ -43,8 +43,8 @@ export class PaymentFlow {
     );
   }
 
-  @Saga(BalanceTopUpDoneEvent)
-  retryAfterBalanceTopUp(event$: Observable<BalanceTopUpDoneEvent>): Observable<ICommand> {
+  @EventHandler(BalanceTopUpDoneEvent)
+  retryAfterBalanceTopUpDone(event$: Observable<BalanceTopUpDoneEvent>): Observable<ICommand> {
     return event$.pipe(
       filter((event) => event.context instanceof PaymentContext),
       map((event) => new PaymentCommand((event.context as PaymentContext).payment, event.context)),
