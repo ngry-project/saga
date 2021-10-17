@@ -24,14 +24,12 @@ export class EventPublisherRegistrar {
     const metadata = SagaMetadata.of(saga.constructor.prototype);
     const subscription = new Subscription();
 
-    if (metadata) {
-      for (const propertyKey of metadata.eventPublishers) {
-        subscription.add(
-          this.register({
-            events$: (saga as any)[propertyKey],
-          }),
-        );
-      }
+    for (const propertyKey of metadata.eventPublishers) {
+      subscription.add(
+        this.register({
+          events$: (saga as any)[propertyKey],
+        }),
+      );
     }
 
     return subscription;

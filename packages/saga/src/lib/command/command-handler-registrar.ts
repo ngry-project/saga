@@ -61,17 +61,15 @@ export class CommandHandlerRegistrar {
     const metadata = SagaMetadata.of(saga.constructor.prototype);
     const subscription = new Subscription();
 
-    if (metadata) {
-      for (const [methodKey, executes] of metadata.commandHandlers) {
-        subscription.add(
-          this.register({
-            executes,
-            execute(command$: Observable<ICommand>): Observable<IEvent> {
-              return (saga as any)[methodKey](command$);
-            },
-          }),
-        );
-      }
+    for (const [methodKey, executes] of metadata.commandHandlers) {
+      subscription.add(
+        this.register({
+          executes,
+          execute(command$: Observable<ICommand>): Observable<IEvent> {
+            return (saga as any)[methodKey](command$);
+          },
+        }),
+      );
     }
 
     return subscription;
