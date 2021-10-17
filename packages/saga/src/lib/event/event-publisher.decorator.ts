@@ -1,4 +1,4 @@
-import { SagaMetadata } from '../saga/saga-metadata';
+import { EventPublisherMetadata } from './event-publisher-metadata';
 
 /**
  * Marks property as an event publisher.
@@ -18,6 +18,6 @@ import { SagaMetadata } from '../saga/saga-metadata';
  */
 export function EventPublisher(): PropertyDecorator {
   return (target, propertyKey) => {
-    SagaMetadata.of(target).addEventPublisher(propertyKey);
+    EventPublisherMetadata.of(target).add(propertyKey);
   };
 }

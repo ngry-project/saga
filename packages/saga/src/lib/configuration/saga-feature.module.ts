@@ -4,9 +4,10 @@ import { CommandHandlerScanner } from '../command/command-handler-scanner';
 import { EventHandlerRegistrar } from '../event/event-handler-registrar';
 import { EventHandlerScanner } from '../event/event-handler-scanner';
 import { EventPublisherRegistrar } from '../event/event-publisher-registrar';
-import { SAGA_FEATURE_OPTIONS, SagaFeatureOptions } from './saga-feature-options';
 import { EventListenerRegistrar } from '../event/event-listener-registrar';
 import { EventListenerScanner } from '../event/event-listener-scanner';
+import { EventPublisherScanner } from '../event/event-publisher-scanner';
+import { SAGA_FEATURE_OPTIONS, SagaFeatureOptions } from './saga-feature-options';
 
 @NgModule()
 export class SagaFeatureModule {
@@ -20,6 +21,7 @@ export class SagaFeatureModule {
     eventListenerRegistrar: EventListenerRegistrar,
     eventListenerScanner: EventListenerScanner,
     eventPublisherRegistrar: EventPublisherRegistrar,
+    eventPublisherScanner: EventPublisherScanner,
   ) {
     for (const feature of features) {
       const { commands = [], events = [], publishers = [], listeners = [], sagas = [] } = feature;
@@ -47,7 +49,7 @@ export class SagaFeatureModule {
       }
 
       for (const type of sagas) {
-        eventPublisherRegistrar.scan(injector.get(type));
+        eventPublisherScanner.scan(injector.get(type));
       }
     }
   }
