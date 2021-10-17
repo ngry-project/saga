@@ -6,6 +6,7 @@ import { EventHandlerScanner } from '../event/event-handler-scanner';
 import { EventPublisherRegistrar } from '../event/event-publisher-registrar';
 import { SAGA_FEATURE_OPTIONS, SagaFeatureOptions } from './saga-feature-options';
 import { EventListenerRegistrar } from '../event/event-listener-registrar';
+import { EventListenerScanner } from '../event/event-listener-scanner';
 
 @NgModule()
 export class SagaFeatureModule {
@@ -17,6 +18,7 @@ export class SagaFeatureModule {
     eventHandlerRegistrar: EventHandlerRegistrar,
     eventHandlerScanner: EventHandlerScanner,
     eventListenerRegistrar: EventListenerRegistrar,
+    eventListenerScanner: EventListenerScanner,
     eventPublisherRegistrar: EventPublisherRegistrar,
   ) {
     for (const feature of features) {
@@ -37,7 +39,7 @@ export class SagaFeatureModule {
       for (const type of sagas) {
         commandHandlerScanner.scan(injector.get(type));
         eventHandlerScanner.scan(injector.get(type));
-        eventListenerRegistrar.scan(injector.get(type));
+        eventListenerScanner.scan(injector.get(type));
       }
 
       for (const type of publishers) {
