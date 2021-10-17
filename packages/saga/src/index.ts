@@ -12,6 +12,8 @@ export * from './lib/event/event';
 export * from './lib/event/event-bus';
 export * from './lib/event/event-handler';
 export * from './lib/event/event-handler.decorator';
+export * from './lib/event/event-listener';
+export * from './lib/event/event-listener.decorator';
 export * from './lib/event/event-metadata';
 export * from './lib/event/event-publisher';
 export * from './lib/event/event-publisher.decorator';

@@ -9,9 +9,14 @@ const SAGA_METADATA = Symbol();
  * @internal
  */
 export class SagaMetadata {
+  private readonly _eventListeners = new Map<PropertyKey, Type<IEvent>>();
   private readonly _eventHandlers = new Map<PropertyKey, Type<IEvent>>();
   private readonly _eventPublishers = new Set<PropertyKey>();
   private readonly _commandHandlers = new Map<PropertyKey, Type<ICommand>>();
+
+  get eventListeners(): ReadonlyMap<PropertyKey, Type<IEvent>> {
+    return this._eventListeners;
+  }
 
   get eventHandlers(): ReadonlyMap<PropertyKey, Type<IEvent>> {
     return this._eventHandlers;
@@ -35,6 +40,10 @@ export class SagaMetadata {
     }
 
     return metadata;
+  }
+
+  addEventListener(methodKey: PropertyKey, listensTo: Type<IEvent>) {
+    this._eventListeners.set(methodKey, listensTo);
   }
 
   addEventHandler(methodKey: PropertyKey, handles: Type<IEvent>) {
