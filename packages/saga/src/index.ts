@@ -18,7 +18,7 @@ export * from './lib/event/event-metadata';
 export * from './lib/event/event-publisher';
 export * from './lib/event/event-publisher.decorator';
 
-export * from './lib/component/component-registrar';
+export * from './lib/component/component-scanner';
 
 export * from './lib/configuration/saga-feature-options';
 export * from './lib/configuration/saga-feature.module';

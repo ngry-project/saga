@@ -6,7 +6,7 @@ import { EventPublisherRegistrar } from '../event/event-publisher-registrar';
 @Injectable({
   providedIn: 'root',
 })
-export class ComponentRegistrar {
+export class ComponentScanner {
   constructor(
     private readonly eventListenerRegistrar: EventListenerRegistrar,
     private readonly eventPublisherRegistrar: EventPublisherRegistrar,

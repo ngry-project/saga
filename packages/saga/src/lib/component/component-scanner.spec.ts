@@ -11,7 +11,7 @@ import { EventListenerRegistry } from '../event/event-listener-registry';
 import { EventPublisher } from '../event/event-publisher.decorator';
 import { EventPublisherRegistry } from '../event/event-publisher-registry';
 import { SagaModule } from '../saga.module';
-import { ComponentRegistrar } from './component-registrar';
+import { ComponentScanner } from './component-scanner';
 
 class PaymentInitEvent implements IEvent {
   constructor(readonly amount: number) {}
@@ -52,7 +52,7 @@ class PaymentFormComponent implements OnDestroy {
   @Output()
   init$ = new EventEmitter<PaymentInitEvent>();
 
-  constructor(private readonly componentRegistrar: ComponentRegistrar) {
+  constructor(private readonly componentRegistrar: ComponentScanner) {
     this.subscription = this.componentRegistrar.scan(this);
   }
 
@@ -70,7 +70,7 @@ class PaymentFormComponent implements OnDestroy {
   }
 }
 
-describe('ComponentRegistrar', () => {
+describe('ComponentScanner', () => {
   let eventListenerRegistry: EventListenerRegistry;
   let eventPublisherRegistry: EventPublisherRegistry;
 
