@@ -9,7 +9,9 @@
       "targets": {
         "build": {
           "executor": "@angular-devkit/build-angular:browser",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/packages/chrome-extension",
             "index": "packages/chrome-extension/src/panel.html",
@@ -26,7 +28,9 @@
               "packages/chrome-extension/src/background.js",
               "packages/chrome-extension/src/content-script.js"
             ],
-            "styles": ["packages/chrome-extension/src/styles.scss"],
+            "styles": [
+              "packages/chrome-extension/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -91,7 +95,9 @@
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/packages/chrome-extension"],
+          "outputs": [
+            "coverage/packages/chrome-extension"
+          ],
           "options": {
             "jestConfig": "packages/chrome-extension/jest.config.js",
             "passWithNoTests": true
@@ -107,7 +113,9 @@
       "targets": {
         "build": {
           "executor": "@angular-devkit/build-angular:browser",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/packages/demo-app",
             "index": "packages/demo-app/src/index.html",
@@ -118,7 +126,9 @@
               "packages/demo-app/src/favicon.ico",
               "packages/demo-app/src/assets"
             ],
-            "styles": ["packages/demo-app/src/styles.css"],
+            "styles": [
+              "packages/demo-app/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -183,7 +193,9 @@
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/packages/demo-app"],
+          "outputs": [
+            "coverage/packages/demo-app"
+          ],
           "options": {
             "jestConfig": "packages/demo-app/jest.config.js",
             "passWithNoTests": true
@@ -205,7 +217,9 @@
         },
         "build": {
           "executor": "@nrwl/angular:package",
-          "outputs": ["dist/packages/saga"],
+          "outputs": [
+            "dist/packages/saga"
+          ],
           "options": {
             "project": "packages/saga/ng-package.json"
           },
@@ -221,11 +235,12 @@
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/packages/saga"],
+          "outputs": [
+            "coverage/packages/saga"
+          ],
           "options": {
             "jestConfig": "packages/saga/jest.config.js",
-            "passWithNoTests": true,
-            "coverageReporters": ["html", "lcov"]
+            "passWithNoTests": true
           }
         },
         "lint": {
