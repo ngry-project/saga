@@ -52,8 +52,8 @@ class PaymentFormComponent implements OnDestroy {
   @Output()
   init$ = new EventEmitter<PaymentInitEvent>();
 
-  constructor(private readonly componentRegistrar: ComponentScanner) {
-    this.subscription = this.componentRegistrar.scan(this);
+  constructor(private readonly scanner: ComponentScanner) {
+    this.subscription = this.scanner.scan(this);
   }
 
   ngOnDestroy() {
