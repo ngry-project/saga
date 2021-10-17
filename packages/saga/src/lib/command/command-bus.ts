@@ -26,7 +26,7 @@ export class CommandBus {
 
   /**
    * Publishes the given command.
-   * Commands are being published asynchronously (in the next microtask) to preserve correct order.
+   * Commands are being executed asynchronously (in the next microtask) to preserve correct order.
    */
   execute<TCommand extends ICommand>(command: TCommand): Promise<void | never> {
     return Promise.resolve().then(() => {

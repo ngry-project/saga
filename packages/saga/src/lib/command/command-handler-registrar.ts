@@ -1,20 +1,17 @@
-import { EMPTY, Observable, of, Subscription, Unsubscribable } from 'rxjs';
+import { EMPTY, of, Unsubscribable } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { ICommand } from './command';
-import { ICommandHandler } from './command-handler';
-import { CommandBus } from './command-bus';
-import { CommandHandlerRegistry } from './command-handler-registry';
-import { CommandRepository } from './command-repository';
-import { IEvent } from '../event/event';
 import { EventBus } from '../event/event-bus';
 import { EventRepository } from '../event/event-repository';
-import { SagaMetadata } from '../saga/saga-metadata';
+import { CommandBus } from './command-bus';
+import { ICommandHandler } from './command-handler';
+import { CommandHandlerRegistry } from './command-handler-registry';
+import { CommandRepository } from './command-repository';
 
 /**
  * Represents a command handler registrar.
  * Registers command handlers in {@link CommandHandlerRegistry} to ensure command of specific type has only one handler.
- * Subscribes command handlers to {@link CommandBus} to execute published commands of specific type.
+ * Binds command handlers to {@link CommandBus} to execute published commands of specific type.
  * @internal
  */
 @Injectable({
@@ -30,8 +27,10 @@ export class CommandHandlerRegistrar {
   ) {}
 
   /**
-   * Registers given command handler in {@link CommandHandlerRegistry} to ensure command of specific type has only one handler.
-   * Subscribes given command handler to {@link CommandBus} to execute published commands of specific type.
+   * Registers a given command handler in the {@link CommandHandlerRegistry} to ensure a command of specific type has only one handler.
+   * Binds a given command handler to the {@link CommandBus} to execute published commands of specific type.
+   * @param handler A command handler to register in the {@link CommandHandlerRegistry} and bind to the {@link CommandBus}.
+   * @returns {Unsubscribable} A subscription object used to cancel the binding to the {@link CommandBus} and unregister the handler from the {@link CommandHandlerRegistry}.
    */
   register(handler: ICommandHandler): Unsubscribable {
     this.registry.register(handler);
@@ -59,24 +58,6 @@ export class CommandHandlerRegistrar {
     subscription.add(() => {
       this.registry.unregister(handler);
     });
-
-    return subscription;
-  }
-
-  scan(saga: object): Unsubscribable {
-    const metadata = SagaMetadata.of(saga.constructor.prototype);
-    const subscription = new Subscription();
-
-    for (const [methodKey, executes] of metadata.commandHandlers) {
-      subscription.add(
-        this.register({
-          executes,
-          execute(command$: Observable<ICommand>): Observable<IEvent> {
-            return (saga as any)[methodKey](command$);
-          },
-        }),
-      );
-    }
 
     return subscription;
   }

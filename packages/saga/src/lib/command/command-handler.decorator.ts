@@ -1,6 +1,6 @@
 import { Type } from '@angular/core';
 import { ICommand } from './command';
-import { SagaMetadata } from '../saga/saga-metadata';
+import { CommandHandlerMetadata } from './command-handler-metadata';
 
 /**
  * Marks method as the command handler.
@@ -19,9 +19,12 @@ import { SagaMetadata } from '../saga/saga-metadata';
  *   );
  * }
  * ```
+ *
+ * @see CommandHandlerMetadata.set
+ * @see CommandHandlerRegistrar.scan
  */
 export function CommandHandler(executes: Type<ICommand>): MethodDecorator {
   return (target, methodKey) => {
-    SagaMetadata.of(target).addCommandHandler(methodKey, executes);
+    CommandHandlerMetadata.of(target).set(methodKey, executes);
   };
 }

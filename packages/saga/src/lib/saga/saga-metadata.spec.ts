@@ -3,7 +3,6 @@ import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ICommand } from '../command/command';
-import { CommandHandler } from '../command/command-handler.decorator';
 import { IEvent } from '../event/event';
 import { EventHandler } from '../event/event-handler.decorator';
 import { EventPublisher } from '../event/event-publisher.decorator';
@@ -17,10 +16,6 @@ class TestCommand implements ICommand {
   constructor(readonly payload: string) {}
 }
 
-class TestDoneEvent implements IEvent {
-  constructor(readonly result: string) {}
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -31,11 +26,6 @@ class TestSaga {
   @EventHandler(TestInitEvent)
   init(event$: Observable<TestInitEvent>): Observable<ICommand> {
     return event$.pipe(map((event) => new TestCommand(event.payload)));
-  }
-
-  @CommandHandler(TestCommand)
-  test(command$: Observable<TestCommand>): Observable<IEvent> {
-    return command$.pipe(map((command) => new TestDoneEvent('hello ' + command.payload)));
   }
 }
 
@@ -64,11 +54,6 @@ describe('SagaMetadata', () => {
     it('should read event handlers', () => {
       expect(metadata.eventHandlers.size).toBe(1);
       expect(metadata.eventHandlers.has('init')).toBe(true);
-    });
-
-    it('should read command handlers', () => {
-      expect(metadata.commandHandlers.size).toBe(1);
-      expect(metadata.commandHandlers.has('test')).toBe(true);
     });
   });
 });
