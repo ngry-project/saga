@@ -2,6 +2,7 @@ import { Inject, Injector, NgModule } from '@angular/core';
 import { CommandHandlerRegistrar } from '../command/command-handler-registrar';
 import { CommandHandlerScanner } from '../command/command-handler-scanner';
 import { EventHandlerRegistrar } from '../event/event-handler-registrar';
+import { EventHandlerScanner } from '../event/event-handler-scanner';
 import { EventPublisherRegistrar } from '../event/event-publisher-registrar';
 import { SAGA_FEATURE_OPTIONS, SagaFeatureOptions } from './saga-feature-options';
 import { EventListenerRegistrar } from '../event/event-listener-registrar';
@@ -14,8 +15,9 @@ export class SagaFeatureModule {
     commandHandlerRegistrar: CommandHandlerRegistrar,
     commandHandlerScanner: CommandHandlerScanner,
     eventHandlerRegistrar: EventHandlerRegistrar,
-    eventPublisherRegistrar: EventPublisherRegistrar,
+    eventHandlerScanner: EventHandlerScanner,
     eventListenerRegistrar: EventListenerRegistrar,
+    eventPublisherRegistrar: EventPublisherRegistrar,
   ) {
     for (const feature of features) {
       const { commands = [], events = [], publishers = [], listeners = [], sagas = [] } = feature;
@@ -34,7 +36,7 @@ export class SagaFeatureModule {
 
       for (const type of sagas) {
         commandHandlerScanner.scan(injector.get(type));
-        eventHandlerRegistrar.scan(injector.get(type));
+        eventHandlerScanner.scan(injector.get(type));
         eventListenerRegistrar.scan(injector.get(type));
       }
 

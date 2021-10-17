@@ -6,9 +6,9 @@ import { ICommand } from '../command/command';
 import { CommandBus } from '../command/command-bus';
 import { IEvent } from './event';
 import { EventBus } from './event-bus';
-import { IEventHandler } from './event-handler';
+import { EventHandler } from './event-handler.decorator';
 import { EventHandlerRegistry } from './event-handler-registry';
-import { EventHandlerRegistrar } from './event-handler-registrar';
+import { EventHandlerScanner } from './event-handler-scanner';
 
 class TestInitEvent implements IEvent {
   constructor(readonly payload: string, readonly ok: boolean) {}
@@ -21,10 +21,9 @@ class TestCommand implements ICommand {
 @Injectable({
   providedIn: 'root',
 })
-class TestInitHandler implements IEventHandler<TestInitEvent> {
-  handles = TestInitEvent;
-
-  handle(event$: Observable<TestInitEvent>): Observable<ICommand> {
+class TestSaga {
+  @EventHandler(TestInitEvent)
+  initTest(event$: Observable<TestInitEvent>): Observable<ICommand> {
     return event$.pipe(
       switchMap((event) => {
         if (event.ok) {
@@ -37,19 +36,19 @@ class TestInitHandler implements IEventHandler<TestInitEvent> {
   }
 }
 
-describe('EventHandlerRegistrar', () => {
+describe('EventHandlerScanner', () => {
   let registry: EventHandlerRegistry;
-  let registrar: EventHandlerRegistrar;
+  let scanner: EventHandlerScanner;
   let commandBus: CommandBus;
   let eventBus: EventBus;
-  let handler: TestInitHandler;
+  let saga: TestSaga;
 
   beforeEach(() => {
     registry = TestBed.inject(EventHandlerRegistry);
-    registrar = TestBed.inject(EventHandlerRegistrar);
+    scanner = TestBed.inject(EventHandlerScanner);
     commandBus = TestBed.inject(CommandBus);
     eventBus = TestBed.inject(EventBus);
-    handler = TestBed.inject(TestInitHandler);
+    saga = TestBed.inject(TestSaga);
   });
 
   beforeEach(() => {
@@ -61,26 +60,26 @@ describe('EventHandlerRegistrar', () => {
     jest.clearAllMocks();
   });
 
-  describe('#register', () => {
+  describe('#scan', () => {
     let subscription: Unsubscribable;
 
     beforeEach(() => {
-      subscription = registrar.register(handler);
+      subscription = scanner.scan(saga);
     });
 
     it('should register event handler in registry', () => {
       expect(registry.length).toBe(1);
     });
 
-    it('should forward events from the event bus to the event handler', async () => {
-      jest.spyOn(handler, 'handle');
+    it('should forward events from event bus to the event handler', async () => {
+      jest.spyOn(saga, 'initTest');
 
       await eventBus.publish(new TestInitEvent('hello', true));
 
-      expect(handler.handle).toHaveBeenCalledTimes(1);
+      expect(saga.initTest).toHaveBeenCalledTimes(1);
     });
 
-    it('should forward commands from the event handler to the command bus', async () => {
+    it('should forward commands from the event handler to command bus', async () => {
       jest.spyOn(commandBus, 'execute');
 
       await eventBus.publish(new TestInitEvent('hello', true));
@@ -103,16 +102,16 @@ describe('EventHandlerRegistrar', () => {
         subscription.unsubscribe();
       });
 
-      it('should unregister the event handler from the registry', () => {
+      it('should unregister the event handler(s) from the registry', () => {
         expect(registry.length).toBe(0);
       });
 
-      it('should unbind the handler from the event bus', async () => {
-        jest.spyOn(handler, 'handle');
+      it('should unbind the event handler(s) from the event bus', async () => {
+        jest.spyOn(saga, 'initTest');
 
         await eventBus.publish(new TestInitEvent('hello', true));
 
-        expect(handler.handle).toHaveBeenCalledTimes(0);
+        expect(saga.initTest).toHaveBeenCalledTimes(0);
       });
     });
   });

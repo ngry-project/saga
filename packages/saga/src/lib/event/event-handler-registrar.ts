@@ -1,15 +1,12 @@
-import { EMPTY, Observable, of, Subscription, Unsubscribable } from 'rxjs';
+import { EMPTY, of, Unsubscribable } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { ICommand } from '../command/command';
 import { CommandBus } from '../command/command-bus';
 import { CommandRepository } from '../command/command-repository';
-import { IEvent } from './event';
 import { EventBus } from './event-bus';
 import { IEventHandler } from './event-handler';
 import { EventHandlerRegistry } from './event-handler-registry';
 import { EventRepository } from './event-repository';
-import { SagaMetadata } from '../saga/saga-metadata';
 
 /**
  * Represents an event handler registrar.
@@ -59,24 +56,6 @@ export class EventHandlerRegistrar {
     subscription.add(() => {
       this.registry.unregister(handler);
     });
-
-    return subscription;
-  }
-
-  scan(saga: object): Unsubscribable {
-    const metadata = SagaMetadata.of(saga.constructor.prototype);
-    const subscription = new Subscription();
-
-    for (const [methodKey, handles] of metadata.eventHandlers) {
-      subscription.add(
-        this.register({
-          handles,
-          handle(event$: Observable<IEvent>): Observable<ICommand> {
-            return (saga as any)[methodKey](event$);
-          },
-        }),
-      );
-    }
 
     return subscription;
   }

@@ -1,18 +1,11 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ICommand } from '../command/command';
 import { IEvent } from '../event/event';
-import { EventHandler } from '../event/event-handler.decorator';
 import { EventPublisher } from '../event/event-publisher.decorator';
 import { SagaMetadata } from './saga-metadata';
 
 class TestInitEvent implements IEvent {
-  constructor(readonly payload: string) {}
-}
-
-class TestCommand implements ICommand {
   constructor(readonly payload: string) {}
 }
 
@@ -22,11 +15,6 @@ class TestCommand implements ICommand {
 class TestSaga {
   @EventPublisher()
   init$ = new BehaviorSubject(new TestInitEvent('tester'));
-
-  @EventHandler(TestInitEvent)
-  init(event$: Observable<TestInitEvent>): Observable<ICommand> {
-    return event$.pipe(map((event) => new TestCommand(event.payload)));
-  }
 }
 
 describe('SagaMetadata', () => {
@@ -49,11 +37,6 @@ describe('SagaMetadata', () => {
     it('should read event publishers', () => {
       expect(metadata.eventPublishers.size).toBe(1);
       expect(metadata.eventPublishers.has('init$')).toBe(true);
-    });
-
-    it('should read event handlers', () => {
-      expect(metadata.eventHandlers.size).toBe(1);
-      expect(metadata.eventHandlers.has('init')).toBe(true);
     });
   });
 });
