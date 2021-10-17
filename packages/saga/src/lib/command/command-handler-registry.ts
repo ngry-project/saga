@@ -46,4 +46,12 @@ export class CommandHandlerRegistry {
 
     this.handlers.set(handler.executes, handler);
   }
+
+  unregister(handler: ICommandHandler): void | never {
+    if (!this.handlers.has(handler.executes)) {
+      throw new Error(`Command handler for ${handler.executes.name} is not registered`);
+    }
+
+    this.handlers.delete(handler.executes);
+  }
 }

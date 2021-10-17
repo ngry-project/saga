@@ -4,6 +4,7 @@ import { IEventPublisher } from './event-publisher';
 import { EventBus } from './event-bus';
 import { EventPublisherRegistry } from './event-publisher-registry';
 import { SagaMetadata } from '../saga/saga-metadata';
+import { tap } from 'rxjs/operators';
 
 /**
  * @internal
@@ -17,7 +18,13 @@ export class EventPublisherRegistrar {
   register(publisher: IEventPublisher): Unsubscribable {
     this.registry.register(publisher);
 
-    return publisher.events$.subscribe((event) => this.eventBus.publish(event));
+    const subscription = publisher.events$.pipe(tap((event) => this.eventBus.publish(event))).subscribe();
+
+    subscription.add(() => {
+      this.registry.unregister(publisher);
+    });
+
+    return subscription;
   }
 
   scan(saga: object): Unsubscribable {

@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { IEvent } from './event';
 
-export interface IEventPublisher {
-  readonly events$: Observable<IEvent>;
+export interface IEventPublisher<TEvent extends IEvent = IEvent> {
+  readonly events$: Observable<TEvent>;
 }

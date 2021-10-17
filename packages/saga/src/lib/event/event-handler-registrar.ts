@@ -36,7 +36,7 @@ export class EventHandlerRegistrar {
   register(handler: IEventHandler): Unsubscribable {
     this.registry.register(handler);
 
-    return this.eventBus.events$
+    const subscription = this.eventBus.events$
       .pipe(
         filter((event) => event instanceof handler.handles),
         mergeMap((event) => {
@@ -55,6 +55,12 @@ export class EventHandlerRegistrar {
         }),
       )
       .subscribe();
+
+    subscription.add(() => {
+      this.registry.unregister(handler);
+    });
+
+    return subscription;
   }
 
   scan(saga: object): Unsubscribable {

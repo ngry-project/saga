@@ -36,7 +36,7 @@ export class CommandHandlerRegistrar {
   register(handler: ICommandHandler): Unsubscribable {
     this.registry.register(handler);
 
-    return this.commandBus.commands$
+    const subscription = this.commandBus.commands$
       .pipe(
         filter((command) => command instanceof handler.executes),
         mergeMap((command) =>
@@ -55,6 +55,12 @@ export class CommandHandlerRegistrar {
         ),
       )
       .subscribe();
+
+    subscription.add(() => {
+      this.registry.unregister(handler);
+    });
+
+    return subscription;
   }
 
   scan(saga: object): Unsubscribable {
