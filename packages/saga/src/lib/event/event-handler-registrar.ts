@@ -1,10 +1,9 @@
 import { EMPTY, Observable, of, Subscription, Unsubscribable } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap } from 'rxjs/operators';
-import { Inject, Injectable, Optional } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ICommand } from '../command/command';
 import { CommandBus } from '../command/command-bus';
 import { CommandRepository } from '../command/command-repository';
-import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 import { IEvent } from './event';
 import { EventBus } from './event-bus';
 import { IEventHandler } from './event-handler';
@@ -28,9 +27,6 @@ export class EventHandlerRegistrar {
     private readonly registry: EventHandlerRegistry,
     private readonly commandRepository: CommandRepository,
     private readonly eventRepository: EventRepository,
-    @Inject(SAGA_ROOT_OPTIONS)
-    @Optional()
-    private readonly options?: SagaRootOptions,
   ) {}
 
   /**
@@ -38,10 +34,6 @@ export class EventHandlerRegistrar {
    * Subscribes a given event handler to {@link EventBus} to respond to corresponding events and publishes resolved commands to {@link CommandBus}.
    */
   register(handler: IEventHandler): Unsubscribable {
-    if (this.options?.debug) {
-      console.log(new Date().toISOString(), handler);
-    }
-
     this.registry.register(handler);
 
     return this.eventBus.events$

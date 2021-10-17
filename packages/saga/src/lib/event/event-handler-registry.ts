@@ -25,10 +25,6 @@ export class EventHandlerRegistry {
    * @throws {Error} If event handler is not unique.
    */
   register(handler: IEventHandler): void | never {
-    if (this.options?.debug) {
-      console.log(new Date().toISOString(), handler);
-    }
-
     if (this.handlers.has(handler)) {
       throw new Error(`${handler.constructor.name} already registered`);
     }

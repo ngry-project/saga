@@ -1,6 +1,5 @@
 import { Observable, Subject } from 'rxjs';
-import { Inject, Injectable, Optional } from '@angular/core';
-import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
+import { Injectable } from '@angular/core';
 import { ICommand } from './command';
 import { CommandHandlerRegistry } from './command-handler-registry';
 import { CommandRepository } from './command-repository';
@@ -21,11 +20,8 @@ export class CommandBus {
   readonly commands$: Observable<ICommand> = this._commands$.asObservable();
 
   constructor(
-    private readonly registry: CommandHandlerRegistry,
+    private readonly commandHandlerRegistry: CommandHandlerRegistry,
     private readonly commandRepository: CommandRepository,
-    @Inject(SAGA_ROOT_OPTIONS)
-    @Optional()
-    private readonly options?: SagaRootOptions,
   ) {}
 
   /**
@@ -34,13 +30,8 @@ export class CommandBus {
    */
   execute<TCommand extends ICommand>(command: TCommand): Promise<void | never> {
     return Promise.resolve().then(() => {
+      this.commandHandlerRegistry.resolve(command);
       this.commandRepository.persist(command);
-
-      if (this.options?.debug) {
-        console.log(new Date().toISOString(), command);
-      }
-
-      this.registry.resolve(command);
 
       this._commands$.next(command);
     });
