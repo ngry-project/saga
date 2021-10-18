@@ -1,7 +1,6 @@
-import { Inject, Injectable, Optional } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { IEvent } from './event';
 import { IEventHandler } from './event-handler';
-import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
 
 /**
  * Represents an event handler registry.
@@ -16,13 +15,6 @@ export class EventHandlerRegistry {
 
   get length(): number {
     return this.handlers.size;
-  }
-
-  constructor(
-    @Inject(SAGA_ROOT_OPTIONS)
-    @Optional()
-    private readonly options?: SagaRootOptions,
-  ) {
   }
 
   has(handler: IEventHandler): boolean {
@@ -40,10 +32,6 @@ export class EventHandlerRegistry {
       if (event instanceof handler.handles) {
         matches.push(handler);
       }
-    }
-
-    if (matches.length === 0 && this.options?.debug) {
-      console.warn(`${event.constructor.name} does not have a corresponding event handler(s)`);
     }
 
     return matches;
