@@ -23,19 +23,19 @@ class TestEventPublisher implements IEventPublisher {
 }
 
 describe('EventPublisherRegistry', () => {
-  let publisher: TestEventPublisher;
   let registry: EventPublisherRegistry;
+  let publisher: TestEventPublisher;
 
   beforeEach(() => {
-    publisher = TestBed.inject(TestEventPublisher);
     registry = TestBed.inject(EventPublisherRegistry);
-  });
-
-  beforeEach(() => {
-    registry.register(publisher);
+    publisher = TestBed.inject(TestEventPublisher);
   });
 
   describe('#register', () => {
+    beforeEach(() => {
+      registry.register(publisher);
+    });
+
     it('should store event publisher', () => {
       expect(registry.length).toBe(1);
       expect(registry.has(publisher)).toBe(true);
@@ -50,13 +50,25 @@ describe('EventPublisherRegistry', () => {
     });
   });
 
-  describe('#unsubscribe', () => {
+  describe('#unregister', () => {
+    beforeEach(() => {
+      registry.register(publisher);
+    });
+
     beforeEach(() => {
       registry.unregister(publisher);
     });
 
     it('should delete the publisher from the registry', () => {
       expect(registry.length).toBe(0);
+    });
+
+    describe('when the given event publisher is not registered', () => {
+      it('should throw an error', () => {
+        expect(() => {
+          registry.unregister(publisher);
+        }).toThrow('Event publisher TestEventPublisher is not registered');
+      });
     });
   });
 });
