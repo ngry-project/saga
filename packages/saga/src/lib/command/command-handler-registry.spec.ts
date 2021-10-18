@@ -86,7 +86,9 @@ describe('CommandHandlerRegistry', () => {
         registry.unregister(handler);
       });
 
-      it('should decrease size of the command handler registry', () => {});
+      it('should decrease size of the command handler registry', () => {
+        expect(registry.length).toBe(0);
+      });
 
       it('should delete the command handler from the registry', () => {
         expect(() => {
