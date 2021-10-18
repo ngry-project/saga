@@ -14,7 +14,7 @@ export class EventRepository {
     if (!this.isPersisted(event)) {
       const { sourceCommandId } = options;
       const id = ++this.nextId;
-      const metadata = new EventMetadata(id, sourceCommandId);
+      const metadata: EventMetadata = { id, sourceCommandId };
 
       Object.defineProperty(event, EVENT_METADATA, {
         value: metadata,

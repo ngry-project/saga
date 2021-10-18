@@ -1,3 +1,4 @@
-export class EventMetadata {
-  constructor(readonly id: number, readonly sourceCommandId?: number) {}
+export interface EventMetadata {
+  readonly id: number;
+  readonly sourceCommandId?: number;
 }

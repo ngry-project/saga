@@ -14,7 +14,7 @@ export class CommandRepository {
     if (!this.isPersisted(command)) {
       const { sourceEventId } = options;
       const id = ++this.nextId;
-      const metadata = new CommandMetadata(id, sourceEventId);
+      const metadata: CommandMetadata = { id, sourceEventId };
 
       Object.defineProperty(command, COMMAND_METADATA, {
         value: metadata,
