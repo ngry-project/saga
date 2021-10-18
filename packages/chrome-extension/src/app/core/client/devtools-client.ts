@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import {
   ClientMessageMessage,
   ClientReadyMessage,
+  DEVTOOLS_ID,
   DevtoolsMessageMessage,
   DevtoolsReadyMessage,
   Message,
@@ -13,7 +14,6 @@ import {
 })
 export class DevtoolsClient {
   private readonly PORT_NAME = 'Saga Devtools';
-  private readonly SOURCE = 'SagaDevtools';
 
   private readonly port: chrome.runtime.Port;
   private readonly ready$$ = new BehaviorSubject<boolean>(false);
@@ -28,7 +28,7 @@ export class DevtoolsClient {
     });
 
     this.port.onMessage.addListener((message: ClientReadyMessage | ClientMessageMessage) => {
-      if (message.source === this.SOURCE) {
+      if (message.source === DEVTOOLS_ID) {
         if (message.type === 'CLIENT_READY') {
           this.ready$$.next(true);
         }
@@ -40,7 +40,7 @@ export class DevtoolsClient {
     });
 
     this.port.postMessage({
-      source: this.SOURCE,
+      source: DEVTOOLS_ID,
       type: 'DEVTOOLS_READY',
       tabId: chrome.devtools.inspectedWindow.tabId,
     } as DevtoolsReadyMessage);
@@ -48,7 +48,7 @@ export class DevtoolsClient {
 
   send<TMessage extends Message>(message: TMessage) {
     this.port.postMessage({
-      source: this.SOURCE,
+      source: DEVTOOLS_ID,
       type: 'DEVTOOLS_MESSAGE',
       message,
     } as DevtoolsMessageMessage);

@@ -27,6 +27,7 @@ export * from './lib/configuration/saga-root.module';
 
 export * from './lib/saga.module';
 
+export * from './lib/devtools/devtools.constants';
 export * from './lib/devtools/message/message';
 export * from './lib/devtools/message/client-ready-message';
 export * from './lib/devtools/message/client-message-message';

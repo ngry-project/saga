@@ -11,7 +11,7 @@ class BackgroundScript {
 }
 
 class UserAgent {
-  SOURCE = 'SagaDevtools';
+  DEVTOOLS_ID = 'SagaDevtools';
 
   constructor(onMessage) {
     window.addEventListener('message', (event) => {
@@ -23,7 +23,7 @@ class UserAgent {
       const message = event.data;
 
       // Only accept messages that we know are ours
-      if (message.source === this.SOURCE) {
+      if (message.source === this.DEVTOOLS_ID) {
         if (chrome.runtime && !!chrome.runtime.getManifest()) {
           onMessage(message);
         } else {

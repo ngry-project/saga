@@ -2,7 +2,7 @@ import { tap } from 'rxjs/operators';
 import { NgModule } from '@angular/core';
 import { CommandBus } from '../command/command-bus';
 import { EventBus } from '../event/event-bus';
-import { DevtoolsRemote } from '../devtools/devtools-remote';
+import { Devtools } from '../devtools/devtools';
 import { CommandPublishedMessage } from '../devtools/message/command-published-message';
 import { EventPublishedMessage } from '../devtools/message/event-published-message';
 import { CommandRepository } from '../command/command-repository';
@@ -15,7 +15,7 @@ export class SagaRootModule {
     private readonly commandRepository: CommandRepository,
     private readonly eventBus: EventBus,
     private readonly eventRepository: EventRepository,
-    private readonly devtools: DevtoolsRemote,
+    private readonly devtools: Devtools,
   ) {
     this.commandBus.commands$
       .pipe(
