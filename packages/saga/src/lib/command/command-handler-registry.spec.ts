@@ -7,14 +7,12 @@ import { ICommandHandler } from './command-handler';
 import { CommandHandlerRegistry } from './command-handler-registry';
 import { IEvent } from '../event/event';
 
-class TestContext {}
-
 class TestCommand implements ICommand {
-  constructor(readonly payload: string, readonly context: unknown) {}
+  constructor(readonly payload: string) {}
 }
 
 class TestDoneEvent implements IEvent {
-  constructor(readonly payload: string, readonly context: unknown) {}
+  constructor(readonly payload: string) {}
 }
 
 @Injectable({
@@ -24,7 +22,7 @@ class TestHandler implements ICommandHandler<TestCommand> {
   executes = TestCommand;
 
   execute(command$: Observable<TestCommand>): Observable<IEvent> {
-    return command$.pipe(map((command) => new TestDoneEvent(command.payload, command.context)));
+    return command$.pipe(map(() => new TestDoneEvent('world')));
   }
 }
 
@@ -37,18 +35,31 @@ describe('CommandHandlerRegistry', () => {
     handler = TestBed.inject(TestHandler);
   });
 
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementation();
+    jest.spyOn(console, 'error').mockImplementation();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('#register', () => {
     beforeEach(() => {
       registry.register(handler);
     });
 
-    describe('when command type does not have an corresponding handler yet', () => {
+    describe('when command type does not have a corresponding handler yet', () => {
+      it('should increase size of the command handler registry', () => {
+        expect(registry.length).toBe(1);
+      });
+
       it('should register the command handler', () => {
-        expect(registry.resolve(new TestCommand('hello', new TestContext()))).toBeInstanceOf(TestHandler);
+        expect(registry.resolve(new TestCommand('hello'))).toBeInstanceOf(TestHandler);
       });
     });
 
-    describe('when command type already has an corresponding handler', () => {
+    describe('when command type already has a corresponding handler', () => {
       it('should throw an error', () => {
         expect(() => {
           registry.register(handler);
@@ -57,22 +68,52 @@ describe('CommandHandlerRegistry', () => {
     });
   });
 
-  describe('#resolve', () => {
-    describe('when command type does not have an corresponding handler', () => {
+  describe('#unregister', () => {
+    describe('when the command handler is not registered', () => {
       it('should throw an error', () => {
         expect(() => {
-          registry.resolve(new TestCommand('hello', new TestContext()));
-        }).toThrow(`No corresponding handler found for command ${TestCommand.name}`);
+          registry.unregister(handler);
+        }).toThrow(`Command handler for TestCommand is not registered`);
       });
     });
 
-    describe('when command type has an corresponding handler', () => {
+    describe('when the command handler is registered', () => {
       beforeEach(() => {
         registry.register(handler);
       });
 
-      it('should return an instance of an corresponding command handler', () => {
-        expect(registry.resolve(new TestCommand('hello', new TestContext()))).toBe(handler);
+      beforeEach(() => {
+        registry.unregister(handler);
+      });
+
+      it('should decrease size of the command handler registry', () => {
+        expect(registry.length).toBe(0);
+      });
+
+      it('should delete the command handler from the registry', () => {
+        expect(() => {
+          registry.resolve(new TestCommand('hello'));
+        }).toThrow(`No corresponding handler found for command ${TestCommand.name}`);
+      });
+    });
+  });
+
+  describe('#resolve', () => {
+    describe('when command type does not have a corresponding handler', () => {
+      it('should throw an error', () => {
+        expect(() => {
+          registry.resolve(new TestCommand('hello'));
+        }).toThrow(`No corresponding handler found for command ${TestCommand.name}`);
+      });
+    });
+
+    describe('when command type has a corresponding handler', () => {
+      beforeEach(() => {
+        registry.register(handler);
+      });
+
+      it('should return an instance of a corresponding command handler', () => {
+        expect(registry.resolve(new TestCommand('hello'))).toBe(handler);
       });
     });
   });

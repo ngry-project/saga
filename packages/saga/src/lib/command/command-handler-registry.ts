@@ -1,5 +1,4 @@
-import { Inject, Injectable, Optional, Type } from '@angular/core';
-import { SAGA_ROOT_OPTIONS, SagaRootOptions } from '../configuration/saga-root-options';
+import { Injectable, Type } from '@angular/core';
 import { ICommand } from './command';
 import { ICommandHandler } from './command-handler';
 
@@ -14,11 +13,9 @@ import { ICommandHandler } from './command-handler';
 export class CommandHandlerRegistry {
   private readonly handlers = new Map<Type<ICommand>, ICommandHandler>();
 
-  constructor(
-    @Inject(SAGA_ROOT_OPTIONS)
-    @Optional()
-    private readonly options?: SagaRootOptions,
-  ) {}
+  get length(): number {
+    return this.handlers.size;
+  }
 
   /**
    * Resolves an {@link ICommandHandler} responsible for execution of the given command.
@@ -43,14 +40,18 @@ export class CommandHandlerRegistry {
    * @throws {Error} When command type already has a corresponding handler.
    */
   register(handler: ICommandHandler): void | never {
-    if (this.options?.debug) {
-      console.log(new Date().toISOString(), handler);
-    }
-
     if (this.handlers.has(handler.executes)) {
       throw new Error(`Command ${handler.executes.name} already has a corresponding handler`);
     }
 
     this.handlers.set(handler.executes, handler);
+  }
+
+  unregister(handler: ICommandHandler): void | never {
+    if (!this.handlers.has(handler.executes)) {
+      throw new Error(`Command handler for ${handler.executes.name} is not registered`);
+    }
+
+    this.handlers.delete(handler.executes);
   }
 }

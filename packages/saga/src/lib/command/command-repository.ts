@@ -13,8 +13,8 @@ export class CommandRepository {
   persist<TCommand extends ICommand>(command: TCommand, options: { sourceEventId?: number } = {}): TCommand {
     if (!this.isPersisted(command)) {
       const { sourceEventId } = options;
-      const id = this.nextId++;
-      const metadata = new CommandMetadata(id, sourceEventId);
+      const id = ++this.nextId;
+      const metadata: CommandMetadata = { id, sourceEventId };
 
       Object.defineProperty(command, COMMAND_METADATA, {
         value: metadata,
@@ -33,7 +33,15 @@ export class CommandRepository {
     return this.getMetadata(command)?.id;
   }
 
+  hasId(command: ICommand): boolean {
+    return this.getId(command) != null;
+  }
+
   getMetadata(command: ICommand): CommandMetadata | undefined {
     return (command as any)[COMMAND_METADATA];
+  }
+
+  hasMetadata(command: ICommand): boolean {
+    return COMMAND_METADATA in command;
   }
 }

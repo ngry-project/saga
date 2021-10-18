@@ -1,8 +1,9 @@
+import { Unsubscribable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { IEventPublisher } from './event-publisher';
 import { EventBus } from './event-bus';
+import { IEventPublisher } from './event-publisher';
 import { EventPublisherRegistry } from './event-publisher-registry';
-import { SagaMetadata } from '../saga/saga-metadata';
 
 /**
  * @internal
@@ -13,21 +14,15 @@ import { SagaMetadata } from '../saga/saga-metadata';
 export class EventPublisherRegistrar {
   constructor(private readonly registry: EventPublisherRegistry, private readonly eventBus: EventBus) {}
 
-  register(publisher: IEventPublisher) {
+  register(publisher: IEventPublisher): Unsubscribable {
     this.registry.register(publisher);
 
-    publisher.events$.subscribe((event) => this.eventBus.publish(event));
-  }
+    const subscription = publisher.events$.pipe(tap((event) => this.eventBus.publish(event))).subscribe();
 
-  scan(saga: object) {
-    const metadata = SagaMetadata.of(saga.constructor.prototype);
+    subscription.add(() => {
+      this.registry.unregister(publisher);
+    });
 
-    if (metadata) {
-      for (const propertyKey of metadata.eventPublishers) {
-        this.register({
-          events$: (saga as any)[propertyKey],
-        });
-      }
-    }
+    return subscription;
   }
 }

@@ -19,7 +19,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "ngry",
+            "prefix": "ny",
             "style": "camelCase"
           }
         ],
@@ -27,7 +27,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "ngry",
+            "prefix": "ny",
             "style": "kebab-case"
           }
         ]

@@ -13,8 +13,8 @@ export class EventRepository {
   persist<TEvent extends IEvent>(event: TEvent, options: { sourceCommandId?: number } = {}): TEvent {
     if (!this.isPersisted(event)) {
       const { sourceCommandId } = options;
-      const id = this.nextId++;
-      const metadata = new EventMetadata(id, sourceCommandId);
+      const id = ++this.nextId;
+      const metadata: EventMetadata = { id, sourceCommandId };
 
       Object.defineProperty(event, EVENT_METADATA, {
         value: metadata,
@@ -33,7 +33,15 @@ export class EventRepository {
     return this.getMetadata(event)?.id;
   }
 
+  hasId(event: IEvent): boolean {
+    return this.getId(event) != null;
+  }
+
   getMetadata(event: IEvent): EventMetadata | undefined {
     return (event as any)[EVENT_METADATA];
+  }
+
+  hasMetadata(event: IEvent): boolean {
+    return EVENT_METADATA in event;
   }
 }

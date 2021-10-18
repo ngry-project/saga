@@ -1,6 +1,6 @@
 import { Type } from '@angular/core';
 import { IEvent } from './event';
-import { SagaMetadata } from '../saga/saga-metadata';
+import { EventHandlerMetadata } from './event-handler-metadata';
 
 /**
  * Marks method as the event handler.
@@ -22,8 +22,6 @@ import { SagaMetadata } from '../saga/saga-metadata';
  */
 export function EventHandler(handles: Type<IEvent>): MethodDecorator {
   return (target, methodKey) => {
-    const metadata = SagaMetadata.of(target);
-
-    metadata.addEventHandler(methodKey, handles);
+    EventHandlerMetadata.of(target).set(methodKey, handles);
   };
 }
