@@ -1,0 +1,10 @@
+@mixin details {
+  details {
+    summary {
+      opacity: .8;
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-style: dashed;
+    }
+  }
+}

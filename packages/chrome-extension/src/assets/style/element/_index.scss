@@ -1,0 +1,11 @@
+@use "body";
+@use "table";
+@use "details";
+@use "pre";
+
+@mixin element {
+  @include body.body();
+  @include table.table();
+  @include details.details();
+  @include pre.pre();
+}
