@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { ApplicationRef, Injectable } from '@angular/core';
 import {
   ClientMessageMessage,
   ClientReadyMessage,
@@ -22,7 +22,7 @@ export class DevtoolsClient {
   readonly ready$ = this.ready$$.asObservable();
   readonly messages$ = this.messages$$.asObservable();
 
-  constructor() {
+  constructor(appRef: ApplicationRef) {
     this.port = chrome.runtime.connect({
       name: this.PORT_NAME,
     });
@@ -31,10 +31,12 @@ export class DevtoolsClient {
       if (message.source === DEVTOOLS_ID) {
         if (message.type === 'CLIENT_READY') {
           this.ready$$.next(true);
+          appRef.tick();
         }
 
         if (message.type === 'CLIENT_MESSAGE') {
           this.messages$$.next(message.message);
+          appRef.tick();
         }
       }
     });
