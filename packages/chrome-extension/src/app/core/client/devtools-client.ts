@@ -1,13 +1,6 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ApplicationRef, Injectable } from '@angular/core';
-import {
-  ClientMessageMessage,
-  ClientReadyMessage,
-  DEVTOOLS_ID,
-  DevtoolsMessageMessage,
-  DevtoolsReadyMessage,
-  Message,
-} from '@ngry/saga';
+import { ClientMessage, DEVTOOLS_ID, DevtoolsMessageMessage, DevtoolsReadyMessage, Message } from '@ngry/saga';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +20,7 @@ export class DevtoolsClient {
       name: this.PORT_NAME,
     });
 
-    this.port.onMessage.addListener((message: ClientReadyMessage | ClientMessageMessage) => {
+    this.port.onMessage.addListener((message: ClientMessage) => {
       if (message.source === DEVTOOLS_ID) {
         if (message.type === 'CLIENT_READY') {
           this.ready$$.next(true);
@@ -41,18 +34,22 @@ export class DevtoolsClient {
       }
     });
 
-    this.port.postMessage({
+    const _message: DevtoolsReadyMessage = {
       source: DEVTOOLS_ID,
       type: 'DEVTOOLS_READY',
       tabId: chrome.devtools.inspectedWindow.tabId,
-    } as DevtoolsReadyMessage);
+    };
+
+    this.port.postMessage(_message);
   }
 
   send<TMessage extends Message>(message: TMessage) {
-    this.port.postMessage({
+    const _message: DevtoolsMessageMessage = {
       source: DEVTOOLS_ID,
       type: 'DEVTOOLS_MESSAGE',
       message,
-    } as DevtoolsMessageMessage);
+    };
+
+    this.port.postMessage(_message);
   }
 }
