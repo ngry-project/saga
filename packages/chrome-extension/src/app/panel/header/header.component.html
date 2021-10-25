@@ -1,2 +1,5 @@
-Client {{(ready$ | async) ? 'READY' : 'PENDING'}}
-
+<span class="status">Client {{(ready$ | async) ? 'READY' : 'PENDING'}}</span>
+<nav>
+  <a routerLink="/message-list" routerLinkActive="active">Messages</a>
+  <a routerLink="/saga-list" routerLinkActive="active">Sagas</a>
+</nav>

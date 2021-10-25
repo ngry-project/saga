@@ -1,0 +1,31 @@
+<div class="item" [class.command-item]="entity.type === 'command'" [class.event-type]="entity.type === 'event'">
+  <div class="item-info" [@highlight]="'ready'">
+    <p>{{entity.type}} <strong>{{entity.name}}</strong></p>
+    <details>
+      <summary>Payload</summary>
+      <pre [highlight]="entity.payload | json" [languages]="['json']" [lineNumbers]="true"></pre>
+    </details>
+    <details>
+      <summary>Metadata</summary>
+      <pre [highlight]="entity.metadata | json" [languages]="['json']" [lineNumbers]="true"></pre>
+    </details>
+  </div>
+  <div class="item-children">
+    <ng-container *ngIf="entity.type === 'command'">
+      <ng-container *ngFor="let event of events">
+        <ng-container *ngIf="event.metadata?.sourceCommandId === entity.metadata?.id">
+          <ny-saga-item class="item-child" [entities]="entities" [entity]="event" [events]="events"
+                        [commands]="commands"></ny-saga-item>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="entity.type === 'event'">
+      <ng-container *ngFor="let command of commands">
+        <ng-container *ngIf="command.metadata?.sourceEventId === entity.metadata?.id">
+          <ny-saga-item class="item-child" [entities]="entities" [entity]="command" [events]="events"
+                        [commands]="commands"></ny-saga-item>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

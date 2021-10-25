@@ -1,4 +1,6 @@
 <header>
-  Client {{(ready$ | async) ? 'READY' : 'PENDING'}}
+  <ny-header></ny-header>
 </header>
-<ny-message-log *ngIf="messages$ | async as messages" [messages]="messages"></ny-message-log>
+<main>
+  <router-outlet></router-outlet>
+</main>

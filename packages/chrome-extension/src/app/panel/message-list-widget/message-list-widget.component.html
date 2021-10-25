@@ -1,0 +1,15 @@
+<ny-viewport>
+  <ol *ngIf="history.state$ | async as state">
+    <li *ngFor="let message of state.messages">
+      <dl>
+        <dt>message <strong>{{message.type}}</strong></dt>
+        <dd>
+          <details>
+            <summary>Payload</summary>
+            <pre [highlight]="message | json" [languages]="['json']" [lineNumbers]="true"></pre>
+          </details>
+        </dd>
+      </dl>
+    </li>
+  </ol>
+</ny-viewport>
