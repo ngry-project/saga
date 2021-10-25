@@ -1,5 +1,7 @@
 @use "assets/style/base";
 @use "assets/style/element";
 
+@import "~highlight.js/styles/stackoverflow-dark.css";
+
 @include base.base();
 @include element.element();
