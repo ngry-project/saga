@@ -1,0 +1,11 @@
+<ng-container *ngFor="let entity of entities">
+  <ng-container
+    *ngIf="(entity.type === 'command' && !entity.metadata?.sourceEventId) || (entity.type === 'event' && !entity.metadata?.sourceCommandId)">
+    <ny-saga-item
+      [entity]="entity"
+      [entities]="entities"
+      [events]="events"
+      [commands]="commands">
+    </ny-saga-item>
+  </ng-container>
+</ng-container>

@@ -1,7 +1,8 @@
 import { Message } from './message';
+import { DEVTOOLS_ID } from '../devtools.constants';
 
 export interface DevtoolsMessageMessage extends Message {
-  readonly source: string;
+  readonly source: typeof DEVTOOLS_ID;
   readonly type: 'DEVTOOLS_MESSAGE';
   readonly message: Message;
 }

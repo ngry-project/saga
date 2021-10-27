@@ -29,11 +29,15 @@ export * from './lib/saga.module';
 
 export * from './lib/devtools/devtools.constants';
 export * from './lib/devtools/message/message';
+export * from './lib/devtools/message/client-message';
 export * from './lib/devtools/message/client-ready-message';
 export * from './lib/devtools/message/client-message-message';
+export * from './lib/devtools/message/devtools-message';
 export * from './lib/devtools/message/devtools-ready-message';
 export * from './lib/devtools/message/devtools-message-message';
+export * from './lib/devtools/message/command-dto';
 export * from './lib/devtools/message/command-published-message';
+export * from './lib/devtools/message/event-dto';
 export * from './lib/devtools/message/event-published-message';
 
 export * from './lib/testing/testing-bus';

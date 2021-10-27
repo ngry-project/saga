@@ -1,0 +1,19 @@
+:host {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.view {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 100%;
+}

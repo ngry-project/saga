@@ -1,9 +1,7 @@
 import { Observable, of } from 'rxjs';
-import { distinctUntilKeyChanged, filter, map, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { CommandHandler, EventHandler, EventPublisher, ICommand, IEvent } from '@ngry/saga';
-import { ofType } from '@ngry/rx';
+import { CommandHandler, EventHandler, ICommand, IEvent } from '@ngry/saga';
 import { InsufficientFundsEvent } from '../../balance/event/insufficient-funds.event';
 import { BalanceTopUpDoneEvent } from '../../balance/event/balance-top-up-done.event';
 import { PaymentCommand } from '../command/payment.command';
@@ -19,21 +17,7 @@ import { PaymentDto } from '../dto/payment.dto';
   providedIn: 'root',
 })
 export class PaymentSaga {
-  @EventPublisher()
-  readonly init$ = this.router.events.pipe(
-    ofType(NavigationEnd),
-    map(() => this.router.getCurrentNavigation()?.finalUrl?.queryParams ?? {}),
-    distinctUntilKeyChanged('dialog'),
-    filter((params) => params.dialog === 'payment'),
-    map((params) => {
-      const payment: PaymentDto = {
-        amount: parseFloat(params.amount ?? '0'),
-      };
-      return new PaymentInitEvent(payment, new PaymentContext(payment));
-    }),
-  );
-
-  constructor(private readonly router: Router, private readonly paymentService: PaymentService) {}
+  constructor(private readonly paymentService: PaymentService) {}
 
   @EventHandler(PaymentInitEvent)
   init(event$: Observable<PaymentInitEvent>): Observable<ICommand> {
@@ -44,7 +28,7 @@ export class PaymentSaga {
   makePayment(command$: Observable<PaymentCommand>): Observable<IEvent> {
     return command$.pipe(
       switchMap((command) =>
-        new PaymentDialog().afterClosed().pipe(
+        new PaymentDialog(command.initial).afterClosed().pipe(
           filter((payment): payment is PaymentDto => payment != null),
           switchMap((payment) =>
             this.paymentService.submit(payment).pipe(

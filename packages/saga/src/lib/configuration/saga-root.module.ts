@@ -20,14 +20,17 @@ export class SagaRootModule {
     this.commandBus.commands$
       .pipe(
         tap((command) => {
-          this.devtools.send({
+          const message: CommandPublishedMessage = {
             type: 'COMMAND_PUBLISHED',
             command: {
+              type: 'command',
               name: command.constructor.name,
               metadata: this.commandRepository.getMetadata(command),
               payload: command,
             },
-          } as CommandPublishedMessage);
+          };
+
+          this.devtools.send(message);
         }),
       )
       .subscribe();
@@ -35,14 +38,17 @@ export class SagaRootModule {
     this.eventBus.events$
       .pipe(
         tap((event) => {
-          this.devtools.send({
+          const message: EventPublishedMessage = {
             type: 'EVENT_PUBLISHED',
             event: {
+              type: 'event',
               name: event.constructor.name,
               metadata: this.eventRepository.getMetadata(event),
               payload: event,
             },
-          } as EventPublishedMessage);
+          };
+
+          this.devtools.send(message);
         }),
       )
       .subscribe();

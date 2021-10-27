@@ -1,0 +1,8 @@
+<ng-container *ngIf="messageLogStore.state$ | async as state">
+  <ny-viewport>
+    <ny-saga-list [entities]="state.entities"
+                  [commands]="state.commands"
+                  [events]="state.events">
+    </ny-saga-list>
+  </ny-viewport>
+</ng-container>

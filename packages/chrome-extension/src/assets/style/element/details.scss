@@ -1,0 +1,8 @@
+@mixin details {
+  details {
+    summary {
+      opacity: .8;
+      cursor: pointer;
+    }
+  }
+}

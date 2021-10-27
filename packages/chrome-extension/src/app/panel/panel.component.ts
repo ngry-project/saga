@@ -1,8 +1,6 @@
-import { Observable } from 'rxjs';
-import { filter, scan, startWith, switchMap, tap } from 'rxjs/operators';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { Message } from '@ngry/saga';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DevtoolsClient } from '../core/client/devtools-client';
+import { MessageHistory } from '../core/client/message-history';
 
 @Component({
   selector: 'ny-panel',
@@ -11,24 +9,13 @@ import { DevtoolsClient } from '../core/client/devtools-client';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PanelComponent {
-  @Input()
-  target: 'panel' | 'tooltip' = 'panel';
+  constructor(private readonly devtools: DevtoolsClient, private readonly messageHistory: MessageHistory) {
+    this.devtools.ready$.subscribe(() => {
+      this.messageHistory.reset();
+    });
 
-  readonly ready$: Observable<boolean>;
-  readonly messages$: Observable<Message[]>;
-
-  constructor(private readonly devtools: DevtoolsClient, private readonly changeDetectorRef: ChangeDetectorRef) {
-    this.ready$ = devtools.ready$.pipe(tap(() => setTimeout(() => this.changeDetectorRef.detectChanges())));
-
-    this.messages$ = this.devtools.ready$.pipe(
-      filter(Boolean),
-      switchMap(() => {
-        return this.devtools.messages$.pipe(
-          scan((messages: Message[], message: Message) => [...messages, message], []),
-          startWith([]),
-          tap(() => setTimeout(() => this.changeDetectorRef.detectChanges())),
-        );
-      }),
-    );
+    this.devtools.messages$.subscribe((message) => {
+      this.messageHistory.add(message);
+    });
   }
 }

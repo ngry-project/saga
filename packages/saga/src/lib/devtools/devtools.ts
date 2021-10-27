@@ -23,8 +23,10 @@ export class Devtools {
     @Inject(DOCUMENT)
     private readonly document: Document,
   ) {
-    if (this.document.defaultView) {
-      fromEvent<MessageEvent>(this.document.defaultView, 'message')
+    const window = this.document.defaultView;
+
+    if (window) {
+      fromEvent<MessageEvent>(window, 'message')
         .pipe(
           filter((event): event is MessageEvent<Message> => event.data?.source === DEVTOOLS_ID),
           filter((event): event is MessageEvent<DevtoolsReadyMessage> => event.data.type === 'DEVTOOLS_READY'),
@@ -32,7 +34,7 @@ export class Devtools {
         )
         .subscribe();
 
-      fromEvent<MessageEvent>(this.document.defaultView, 'message')
+      fromEvent<MessageEvent>(window, 'message')
         .pipe(
           filter((event): event is MessageEvent<Message> => event.data?.source === DEVTOOLS_ID),
           filter((event): event is MessageEvent<DevtoolsMessageMessage> => event.data.type === 'DEVTOOLS_MESSAGE'),
@@ -40,7 +42,7 @@ export class Devtools {
         )
         .subscribe();
 
-      this.document.defaultView.postMessage(
+      window.postMessage(
         {
           source: DEVTOOLS_ID,
           type: 'CLIENT_READY',
@@ -51,13 +53,17 @@ export class Devtools {
   }
 
   send<TMessage extends Message>(message: TMessage) {
-    this.document.defaultView?.postMessage(
-      {
-        source: DEVTOOLS_ID,
-        type: 'CLIENT_MESSAGE',
-        message,
-      } as ClientMessageMessage,
-      '*',
-    );
+    const window = this.document.defaultView;
+
+    if (window) {
+      window.postMessage(
+        {
+          source: DEVTOOLS_ID,
+          type: 'CLIENT_MESSAGE',
+          message,
+        } as ClientMessageMessage,
+        '*',
+      );
+    }
   }
 }
