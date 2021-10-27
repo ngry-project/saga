@@ -25,7 +25,7 @@ export class AppComponent implements OnDestroy {
 
   submit() {
     const payment: PaymentDto = {
-      amount: 123,
+      amount: 100,
     };
 
     this.init$.next(new PaymentInitEvent(payment, new PaymentContext(payment)));

@@ -6,7 +6,7 @@ export class BalanceTopUpDialog {
 
   afterClosed(): Observable<BalanceTopUpForm> {
     return of({
-      amount: this.initialAmount,
+      amount: this.initialAmount * 1.65,
       credentials: {
         number: '1234 5678 9012 3456',
         cvv: '123',

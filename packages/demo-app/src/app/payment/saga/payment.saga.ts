@@ -1,7 +1,6 @@
 import { Observable, of } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommandHandler, EventHandler, ICommand, IEvent } from '@ngry/saga';
 import { InsufficientFundsEvent } from '../../balance/event/insufficient-funds.event';
 import { BalanceTopUpDoneEvent } from '../../balance/event/balance-top-up-done.event';
@@ -18,7 +17,7 @@ import { PaymentDto } from '../dto/payment.dto';
   providedIn: 'root',
 })
 export class PaymentSaga {
-  constructor(private readonly router: Router, private readonly paymentService: PaymentService) {}
+  constructor(private readonly paymentService: PaymentService) {}
 
   @EventHandler(PaymentInitEvent)
   init(event$: Observable<PaymentInitEvent>): Observable<ICommand> {

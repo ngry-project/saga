@@ -1,32 +1,35 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ObservableSpy } from '@ngry/rx';
 import { ICommand, IEvent, TestingBus } from '@ngry/saga';
-import { PaymentDoneEvent } from '../event/payment-done.event';
-import { AppModule } from '../../app.module';
-import { BalanceTopUpCommand } from '../../balance/command/balance-top-up.command';
-import { PaymentFailEvent } from '../event/payment-fail.event';
-import { PaymentContext } from '../context/payment.context';
 import { PaymentDto } from '../dto/payment.dto';
 import { PaymentCommand } from '../command/payment.command';
-import { InsufficientFundsEvent } from '../../balance/event/insufficient-funds.event';
-import { BalanceTopUpContext } from '../../balance/context/balance-top-up.context';
-import { BalanceTopUpDoneEvent } from '../../balance/event/balance-top-up-done.event';
-import { Router } from '@angular/router';
 import { PaymentInitEvent } from '../event/payment-init.event';
+import { PaymentDoneEvent } from '../event/payment-done.event';
+import { PaymentFailEvent } from '../event/payment-fail.event';
+import { PaymentContext } from '../context/payment.context';
+import { BalanceTopUpCommand } from '../../balance/command/balance-top-up.command';
+import { BalanceTopUpContext } from '../../balance/context/balance-top-up.context';
+import { InsufficientFundsEvent } from '../../balance/event/insufficient-funds.event';
+import { BalanceTopUpDoneEvent } from '../../balance/event/balance-top-up-done.event';
+import { BalanceChangeEvent } from '../../balance/event/balance-change.event';
+import { AppModule } from '../../app.module';
+import { AppComponent } from '../../app.component';
 
 describe('PaymentSaga', () => {
-  let router: Router;
+  let fixture: ComponentFixture<AppComponent>;
+  let component: AppComponent;
   let testingBus: TestingBus;
   let sequenceSpy: ObservableSpy<ICommand | IEvent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [AppModule, RouterTestingModule],
-    });
+    }).compileComponents();
 
-    router = TestBed.inject(Router);
     testingBus = TestBed.inject(TestingBus);
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
   });
 
   beforeEach(() => {
@@ -44,27 +47,26 @@ describe('PaymentSaga', () => {
       paymentContext = new PaymentContext(payment);
     });
 
-    beforeEach(async () => {
-      await router.navigate([], {
-        queryParams: {
-          dialog: 'payment',
-          amount: 100,
-        },
-      });
+    beforeEach(() => {
+      component.submit();
     });
 
-    it('should request balance top-up', () => {
+    it('should request balance top-up', async () => {
+      await sequenceSpy.whenCount(10);
+
       expect(sequenceSpy.values).toStrictEqual([
         new PaymentInitEvent(payment, paymentContext),
 
         new PaymentCommand(payment, paymentContext),
         new PaymentFailEvent(payment, paymentContext),
-        new InsufficientFundsEvent(payment.amount, paymentContext),
+        new InsufficientFundsEvent(100, paymentContext),
 
-        new BalanceTopUpCommand(payment.amount, paymentContext),
-        new BalanceTopUpDoneEvent(payment.amount, paymentContext),
+        new BalanceTopUpCommand(100, paymentContext),
+        new BalanceChangeEvent(0, 165),
+        new BalanceTopUpDoneEvent(165, paymentContext),
 
         new PaymentCommand(payment, paymentContext),
+        new BalanceChangeEvent(165, 65),
         new PaymentDoneEvent(payment, paymentContext),
       ]);
     });
@@ -73,7 +75,6 @@ describe('PaymentSaga', () => {
   describe('when sufficient funds', () => {
     let payment: PaymentDto;
     let paymentContext: PaymentContext;
-    let balanceTopUpAmount: number;
     let balanceTopUpContext: BalanceTopUpContext;
 
     beforeEach(() => {
@@ -82,30 +83,29 @@ describe('PaymentSaga', () => {
       };
       paymentContext = new PaymentContext(payment);
 
-      balanceTopUpAmount = 100;
       balanceTopUpContext = new BalanceTopUpContext();
     });
 
     beforeEach(async () => {
-      await testingBus.execute(new BalanceTopUpCommand(balanceTopUpAmount, balanceTopUpContext));
+      await testingBus.execute(new BalanceTopUpCommand(100, balanceTopUpContext));
+      await sequenceSpy.whenCount(3);
     });
 
-    beforeEach(async () => {
-      await router.navigate([], {
-        queryParams: {
-          dialog: 'payment',
-          amount: 100,
-        },
-      });
+    beforeEach(() => {
+      component.submit();
     });
 
-    it('should not request balance top-up', () => {
+    it('should not request balance top-up', async () => {
+      await sequenceSpy.whenCount(7);
+
       expect(sequenceSpy.values).toStrictEqual([
-        new BalanceTopUpCommand(balanceTopUpAmount, balanceTopUpContext),
-        new BalanceTopUpDoneEvent(balanceTopUpAmount, balanceTopUpContext),
+        new BalanceTopUpCommand(100, balanceTopUpContext),
+        new BalanceChangeEvent(0, 165),
+        new BalanceTopUpDoneEvent(165, balanceTopUpContext),
 
         new PaymentInitEvent(payment, paymentContext),
         new PaymentCommand(payment, paymentContext),
+        new BalanceChangeEvent(165, 65),
         new PaymentDoneEvent(payment, paymentContext),
       ]);
     });
