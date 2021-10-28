@@ -219,7 +219,7 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "cwd": "packages/saga",
-            "command": "semantic-release"
+            "command": "npx semantic-release"
           }
         },
         "build": {
