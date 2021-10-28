@@ -215,6 +215,13 @@
             "command": "cp README.md dist/packages/saga"
           }
         },
+        "release": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "cwd": "packages/saga",
+            "command": "semantic-release"
+          }
+        },
         "build": {
           "executor": "@nrwl/angular:package",
           "outputs": [
